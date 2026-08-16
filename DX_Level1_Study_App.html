@@ -218,6 +218,9 @@ main{ padding: 16px; padding-bottom: 60px; }
 .badge-deck{ color: var(--series-a); }
 .badge-notes{ color: var(--amber); }
 .badge-past{ color: var(--series-b); }
+.badge-tier1, .badge-tier2{ color: var(--alert); }
+.badge-tier3{ color: var(--series-a); }
+.badge-tier4, .badge-tier5{ color: var(--muted); }
 .badge-muted{ color: var(--muted); }
 
 table{
@@ -1450,12 +1453,16 @@ var CARD_DECKS = [
 ];
 
 var TIER_META = {
-  1: { label: "Near-certain", note: "all three sittings", dots: "●●●●", cls: "t1" },
-  2: { label: "High", note: "two of three sittings", dots: "●●●", cls: "t2" },
-  3: { label: "Likely", note: "one sitting, or same family as a repeat", dots: "●●", cls: "t3" },
-  4: { label: "Possible", note: "core M1–M3 content, not yet observed", dots: "●", cls: "t4" },
-  5: { label: "Low", note: "M4–M6 — never recalled from a real sitting", dots: "○", cls: "t5" }
+  1: { label: "Near-certain", note: "all three sittings", stars: "★★★★★", cls: "t1" },
+  2: { label: "High", note: "two of three sittings", stars: "★★★★☆", cls: "t2" },
+  3: { label: "Likely", note: "one sitting, or same family as a repeat", stars: "★★★☆☆", cls: "t3" },
+  4: { label: "Possible", note: "core M1–M3 content, not yet observed", stars: "★★☆☆☆", cls: "t4" },
+  5: { label: "Low", note: "M4–M6 — never recalled from a real sitting", stars: "★☆☆☆☆", cls: "t5" }
 };
+function tierBadge(tier){
+  var m = TIER_META[tier];
+  return '<span class="badge badge-tier' + tier + '" title="Tier ' + tier + ' — ' + m.label + " (" + m.note + ')">' + m.stars + "</span>";
+}
 
 /* ===================== score / pass-line ===================== */
 function computeScoreFor(section){
@@ -1503,7 +1510,7 @@ function onTabSwitch(tab){
 function tierLegendHtml(){
   var rows = [1,2,3,4,5].map(function(t){
     var m = TIER_META[t];
-    return '<div class="tier-row"><span class="tier-dots mono ' + m.cls + '">' + m.dots + '</span>' +
+    return '<div class="tier-row"><span class="tier-dots mono ' + m.cls + '">' + m.stars + '</span>' +
       '<span><b>Tier ' + t + '</b> — ' + m.label + " (" + m.note + ")</span></div>";
   }).join("");
   return '<details class="tier-legend"><summary>Tier legend</summary><div class="tier-legend-body">' + rows + "</div></details>";
@@ -1635,7 +1642,8 @@ function renderDrillQuestion(){
 
   return '<div class="panel drill-question">' +
     '<div class="q-meta mono">' +
-      '<span>' + escapeHtml(qid) + " &middot; " + moduleTag(q.m) + " &middot; tier " + q.tier + "</span>" +
+      '<span>' + escapeHtml(qid) + " &middot; " + moduleTag(q.m) + "</span>" +
+      tierBadge(q.tier) +
       srcBadge +
       '<button class="flag-btn' + (flagged ? " flag-active" : "") + '" onclick="onDrillFlag(\'' + qid + '\')" aria-pressed="' + flagged + '">' + (flagged ? "★ Flagged" : "☆ Flag for review") + "</button>" +
     "</div>" +
@@ -1864,7 +1872,7 @@ function renderBlankQuestion(){
   }
 
   return '<div class="panel blank-question">' +
-    '<div class="q-meta mono"><span>' + escapeHtml(bid) + " &middot; " + moduleTag(b.m) + " &middot; tier " + b.tier + "</span></div>" +
+    '<div class="q-meta mono"><span>' + escapeHtml(bid) + " &middot; " + moduleTag(b.m) + "</span>" + tierBadge(b.tier) + "</div>" +
     '<div class="blank-sentence">' + sentence + "</div>" +
     hintHtml + revealedNote +
     '<div class="drill-progress mono muted">Item ' + (state.blanks.index + 1) + " / " + state.blanks.order.length + "</div>" +
