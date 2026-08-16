@@ -94,6 +94,7 @@ header.site-header{
   white-space: nowrap;
 }
 .score-readout b{ color: var(--ink); font-size:1rem; }
+.score-label{ color: var(--series-a); font-weight: 700; letter-spacing: 0.04em; margin-right: 2px; }
 
 /* ---------- the pass line ---------- */
 .pass-line{
@@ -335,6 +336,50 @@ button{ font-family: inherit; }
 }
 .drill-progress{ margin-top: 14px; font-size: 0.72rem; }
 .drill-actions{ margin-top: 12px; display:flex; gap:10px; flex-wrap:wrap; }
+
+/* ---------- blanks ---------- */
+.blank-sentence{
+  font-size: 1.05rem;
+  font-weight: 600;
+  line-height: 2.1;
+  margin: 4px 0 6px;
+}
+.blank-input{
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  text-align: center;
+  border: none;
+  border-bottom: 2px solid var(--series-a);
+  background: transparent;
+  color: var(--ink);
+  padding: 2px 4px;
+  margin: 0 2px;
+  min-width: 3ch;
+}
+.blank-input:disabled{ opacity: 1; }
+.blank-input.blank-correct{ border-color: var(--series-b); color: var(--series-b); font-weight: 700; }
+.blank-input.blank-wrong{ border-color: var(--alert); color: var(--alert); font-weight: 700; }
+.blank-input.blank-revealed{ border-color: var(--amber); color: var(--amber); font-weight: 700; }
+.blank-answer-reveal{
+  display: inline-block;
+  font-size: 0.78rem;
+  color: var(--series-b);
+  margin-left: 4px;
+  white-space: nowrap;
+}
+.blank-hint{
+  margin-top: 10px;
+  padding: 8px 12px;
+  background: var(--ground);
+  border-left: 3px solid var(--amber);
+  font-size: 0.85rem;
+  color: var(--ink);
+}
+.blank-revealed-note{
+  margin-top: 10px;
+  font-size: 0.78rem;
+  color: var(--amber);
+}
 .btn-primary, .btn-ghost{
   font-family: var(--font-display);
   font-weight: 700;
@@ -429,7 +474,7 @@ button{ font-family: inherit; }
 /* ---------- print ---------- */
 @media print{
   body{ background: #fff !important; }
-  header.site-header, nav.tab-bar, #tab-drill, #tab-study, #tab-cards, #tab-check{ display:none !important; }
+  header.site-header, nav.tab-bar, #tab-drill, #tab-blanks, #tab-study, #tab-cards, #tab-check{ display:none !important; }
   .panel{ border: none; padding: 0; }
   main{ padding: 0; }
   .cheat-sheet{ break-inside: avoid; }
@@ -451,7 +496,7 @@ button{ font-family: inherit; }
 <header class="site-header">
   <div class="header-row">
     <div class="brand">DX LEVEL 1<small>2024 HE Domain &middot; 80 to pass</small></div>
-    <div class="score-readout" id="scoreReadout"><b id="scorePct">0%</b> &middot; <span id="scoreFrac">0/0</span></div>
+    <div class="score-readout" id="scoreReadout"><span class="score-label mono" id="scoreLabel">DRILL</span> <b id="scorePct">0%</b> &middot; <span id="scoreFrac">0/0</span></div>
   </div>
   <div class="pass-line" aria-hidden="false" role="img" aria-label="Score progress against the 80 percent pass line">
     <div class="pass-line-track">
@@ -466,6 +511,7 @@ button{ font-family: inherit; }
 
 <nav class="tab-bar" id="tabBar" role="tablist" aria-label="Sections">
   <button class="tab-btn" role="tab" data-tab="drill" aria-selected="true">Drill</button>
+  <button class="tab-btn" role="tab" data-tab="blanks" aria-selected="false">Blanks</button>
   <button class="tab-btn" role="tab" data-tab="study" aria-selected="false">Study</button>
   <button class="tab-btn" role="tab" data-tab="cards" aria-selected="false">Cards</button>
   <button class="tab-btn" role="tab" data-tab="cheat" aria-selected="false">Cheat</button>
@@ -474,6 +520,7 @@ button{ font-family: inherit; }
 
 <main>
   <section class="tab-panel active" id="tab-drill"></section>
+  <section class="tab-panel" id="tab-blanks"></section>
   <section class="tab-panel" id="tab-study"></section>
   <section class="tab-panel" id="tab-cards"></section>
   <section class="tab-panel" id="tab-cheat"></section>
@@ -586,7 +633,146 @@ const QUESTIONS = [
 {id:"M6-02",m:6,q:"In DEJ 3333, what does the first '3!' target?",opts:["Check Pain Point/Requirement in 3 hours","Respond within 3 days","3 CX values per year","30% satisfaction increase"],a:0,why:"3 hours → 3 days → 3 values/year → 30% satisfaction."},
 {id:"M6-03",m:6,q:"Which DEJ phase covers 2024–2025?",opts:["DEJ 1.0","DEJ 2.0","DEJ 3.0","DEJ 4.0"],a:1,why:"1.0 = 2018–2023; 2.0 = 2024–2025; 3.0 = 2026~."},
 {id:"M6-04",m:6,q:"What are the 5 Main Customer Experiences (3C 2S)?",opts:["Connectivity, Core, Customization, Servitization, Sustainability","Connectivity, Care, Customization, Servitization, Sustainability","Connectivity, Care, Cost, Servitization, Sustainability","Connectivity, Care, Customization, Service, Speed"],a:1,why:"Care, not Core. Your compiled notes have this wrong — see the Check tab."},
-{id:"M6-05",m:6,q:"HE's stated vision phrase is:",opts:["Life's Good","Sync to You, Open to All","Innovation for All","Customer First, Always"],a:1,why:"Sync to You, Open to All."}
+{id:"M6-05",m:6,q:"HE's stated vision phrase is:",opts:["Life's Good","Sync to You, Open to All","Innovation for All","Customer First, Always"],a:1,why:"Sync to You, Open to All."},
+{id:"M1-36",m:1,q:"What is the stated CX Mission?",opts:["Market Leadership","Customer Delight","Zero Defects","Digital First"],a:1,why:"Mission = Customer Delight; Core Values = F.U.N; Basic Values = Q.C.D."},
+{id:"M1-37",m:1,q:"What does F.U.N stand for in CX Core Values?",opts:["Fast, Useful, New","First, Unique, New","Friendly, Universal, Novel","Focused, Unified, Natural"],a:1,why:"First (No.1 beyond expectations), Unique (life-changing), New (never-before)."},
+{id:"M1-38",m:1,q:"Q.C.D — the CX Basic Values — stands for:",opts:["Quality, Cost, Delivery","Quick, Clear, Direct","Quality, Customer, Data","Quantity, Cost, Design"],a:0,why:"The baseline values beneath F.U.N."},
+{id:"M1-39",m:1,q:"The 9 CEJ stages are grouped into which three phases?",opts:["Plan, Do, Check","Explore, Purchase, Use","Aware, Decide, Replace","Collect, Store, Analyze"],a:1,why:"Explore (1–3), Purchase (4–6), Use (7–9), with Feedback throughout."},
+{id:"M1-40",m:1,q:"Which is the 6th stage of the CEJ?",opts:["Deliver","On-board","Use","Purchase"],a:1,why:"Aware, Explore, Decide, Purchase, Deliver, On-board, Use, Maintain, Replace."},
+{id:"M1-41",m:1,q:"Which is NOT one of the 4 elements the C-D-P Management System redesigns?",opts:["Organization","Process","Performance management","Product portfolio"],a:3,why:"The four are Organization, Process, Performance management, Corporate culture."},
+{id:"M1-42",m:1,q:"In the '21 DDM best-practice case, which segment was targeted?",opts:["First-time TV buyers","Customers with a UHD TV more than 5 years old","Customers in the 20s age group","Commercial display buyers"],a:1,why:"Replacement-cycle targeting via discounts on the Smart TV home screen."},
+{id:"M1-43",m:1,q:"NPS is calculated as:",opts:["% satisfaction − % dissatisfaction","% of promoters − % of detractors","Revenue ÷ subscribers","Acquisition + Retention + Engagement"],a:1,why:"NPS = promoters − detractors (loyalty). CXR = satisfaction − dissatisfaction."},
+{id:"M1-44",m:1,q:"CXR is calculated as:",opts:["% of promoters − % of detractors","% satisfaction − % dissatisfaction","Total revenue ÷ users","Monthly active users"],a:1,why:"CXR measures product/contact-point competitiveness."},
+{id:"M1-45",m:1,q:"Which index measures satisfaction from the 'Moment of Truth' / customer contact point?",opts:["CXR-P","CXR-Mot","NPS","A.R.E"],a:1,why:"CXR-Mot covers store, delivery, CS, care. CXR-P covers product use."},
+{id:"M1-46",m:1,q:"ARPU is defined as:",opts:["Total revenue ÷ number of subscribers","Promoters minus detractors","Monthly active users","Acquisition rate per user"],a:0,why:"Average Revenue Per User."},
+{id:"M1-47",m:1,q:"A.R.E Index stands for:",opts:["Analyze, Report, Execute","Acquisition, Retention, Engagement","Awareness, Reach, Effectiveness","Accuracy, Reliability, Efficiency"],a:1,why:"Measures customer loyalty by stage."},
+{id:"M1-48",m:1,q:"Which is LGE's in-house integrated analytics system for AI and big data?",opts:["Data Lake","Intellytics","CPPM","Data NXI"],a:1,why:"Intellytics. Data Lake = raw data repository. CPPM = pain point management."},
+{id:"M1-49",m:1,q:"Which role sets the budget and value-evaluates the final products?",opts:["Project Leader","Champion / Sponsor","DX Facilitator","Data Governance"],a:1,why:"Champion/Sponsor presents core tasks, stimulates the project, sets budget."},
+{id:"M2-14",m:2,q:"Which source defines Big Data as next-generation technology to draw value from large-scale data at super-fast speed?",opts:["Gartner","McKinsey","IDC","NIA"],a:2,why:"IDC — super-fast collection, discovery, analysis."},
+{id:"M2-15",m:2,q:"Which source describes Big Data as the overall process/platform covering HW, SW and all processes?",opts:["Wikipedia","NIA","Gartner","IDC"],a:1,why:"NIA = National Information Society Agency."},
+{id:"M2-16",m:2,q:"What is the correct data speed spectrum?",opts:["Real Time → Near Real Time → Periodic → Batch","Batch → Periodic → Near Real Time → Real Time","Periodic → Batch → Real Time → Near Real Time","Batch → Real Time → Periodic → Near Real Time"],a:1,why:"Slowest to fastest: Batch → Periodic → Near Real Time → Real Time."},
+{id:"M2-17",m:2,q:"What is the correct data scale spectrum?",opts:["TB → PB → EB → ZB → YB","TB → EB → PB → ZB → YB","PB → TB → EB → YB → ZB","GB → TB → ZB → EB → PB"],a:0,why:"Tera → Peta → Exa → Zetta → Yotta."},
+{id:"M2-18",m:2,q:"Which two characteristics make Excel insufficient for Big Data?",opts:["Velocity and Value","Volume and Variety","Veracity and Volume","Variety and Volatility"],a:1,why:"Size it can't handle, plus structured/semi/unstructured types."},
+{id:"M2-19",m:2,q:"What is the primary target of Text Mining?",opts:["Numerical data","Categorized data","Text","Images only"],a:2,why:"Data Mining targets numerical/categorized data; Text Mining targets text."},
+{id:"M2-20",m:2,q:"Which method is used by Text Mining but NOT by Data Mining?",opts:["Machine Learning","Ontology and Language Process","Regression","Clustering"],a:1,why:"Text Mining adds Indexing, Language Process, Ontology."},
+{id:"M2-21",m:2,q:"Text Mining is best described as:",opts:["A type of structured data mining","A type of unstructured data mining","A statistical hypothesis test","A sampling method"],a:1,why:"Explicitly stated in the deck."},
+{id:"M2-22",m:2,q:"Deep Learning is defined as:",opts:["Any rule-based algorithm","Processing information in an artificial neural network similar to human neurons","A method of collecting big data","A cloud storage technique"],a:1,why:"DL is one of several ML methods, using neural networks."},
+{id:"M2-23",m:2,q:"Which is NOT listed as a machine learning algorithm in the deck?",opts:["Random Forest","Support Vector Machine","K-Nearest Neighbor","Chi-Square Test"],a:3,why:"Chi-square is a hypothesis test, not an ML algorithm."},
+{id:"M2-24",m:2,q:"Regarding singularities, the deck states:",opts:["Singularities should always be deleted","Sometimes the occurrence of singularity itself is a hidden pattern","Singularities only occur in small data","Singularities invalidate the analysis"],a:1,why:"Capturing overlooked singularities is one of the four advantages."},
+{id:"M2-25",m:2,q:"Big data enables which reasoning approach?",opts:["Only deduction","A case-oriented inductive approach","Neither induction nor deduction","Only rule-based reasoning"],a:1,why:"Induction from cases; 'data is a representation of facts.'"},
+{id:"M2-26",m:2,q:"Who said 'It's easy to lie with statistics, but it's hard to tell the truth without statistics'?",opts:["John Tukey","Andrejs Dunkels","Gartner","W. Edwards Deming"],a:1,why:"Dunkels — quoted in the DDDM section. Tukey is quoted in the EDA section."},
+{id:"M2-27",m:2,q:"An A/B test is best described as:",opts:["Testing two hypotheses with ANOVA","Providing version A and B to two user groups and comparing results","Splitting data into training and test sets","Comparing two sampling methods"],a:1,why:"Used in digital marketing and business decision-making."},
+{id:"M3-37",m:3,q:"Which symbol represents the population standard deviation?",opts:["s","σ","X̄","μ"],a:1,why:"Population: μ, σ², σ. Sample: X̄, s², s."},
+{id:"M3-38",m:3,q:"X̄ represents:",opts:["Population average","Sample average","Population variance","Sample size"],a:1,why:"X̄ is the sample statistic; μ is the population parameter."},
+{id:"M3-39",m:3,q:"'Would you cross a river with an average depth of 1 metre?' illustrates:",opts:["The Flaw of Average","Sampling error","The Central Limit Theorem","Outlier detection"],a:0,why:"Actual depths were 0.5M and 3.2M — the mean hides the spread."},
+{id:"M3-40",m:3,q:"An athlete won Bronze, Silver, Gold, Gold, Gold. Why is 'average 2.4 medals' meaningless?",opts:["The sample is too small","Medal rank is ordinal — intervals cannot be perceived","Gold should be weighted higher","The mode should always be used"],a:1,why:"Median = Gold, Mode = Gold at 60%. Averaging an ordinal scale is invalid here."},
+{id:"M3-41",m:3,q:"Which measure of centre is appropriate for nominal data?",opts:["Mean","Median","Mode","Range"],a:2,why:"E.g. 45 men vs 30 women → mode = men at 60% occupancy."},
+{id:"M3-42",m:3,q:"How many data points are needed in 3 dimensions if 10 suffice in 1 dimension?",opts:["30","100","1000","10000"],a:2,why:"10 → 100 → 1000. More variables need exponentially more data."},
+{id:"M3-43",m:3,q:"Which is NOT part of a Data Quality Report?",opts:["Number of missing values","Number of outliers","Data size","Company revenue"],a:3,why:"Quality block: type, size, missing, outliers, consistency. Summary: average, mode, median, SD."},
+{id:"M3-44",m:3,q:"Which is NOT one of the four EDA types?",opts:["Data distribution","Comparison by category","Changes over time","Hypothesis testing"],a:3,why:"Hypothesis testing is CDA. EDA's fourth type is finding correlations between variables."},
+{id:"M3-45",m:3,q:"Which graph is most suitable for checking share by category for a discrete variable?",opts:["Histogram","Scatter plot","Pareto chart","Control chart"],a:2,why:"Discrete → pie, donut, stacked bar, Pareto."},
+{id:"M3-46",m:3,q:"Which graph best shows the relationship between two continuous variables?",opts:["Pie chart","Scatter plot","Pareto chart","Stacked bar chart"],a:1,why:"Scatter plots reveal positive/negative/no correlation."},
+{id:"M3-47",m:3,q:"Who said EDA is 'the attitude, flexibility, and spontaneity to discover what we believe exists, as well as what we believe does not exist'?",opts:["Andrejs Dunkels","John Tukey","Gartner","Alan Turing"],a:1,why:"Tukey, the originator of EDA."},
+{id:"M3-48",m:3,q:"Roughly what proportion of EDA findings may simply confirm what is already known?",opts:["20%","50%","80%","100%"],a:2,why:"About 80% — results still need validation and interpretation to yield insight."},
+{id:"M3-49",m:3,q:"Data appears uncorrelated overall, but splits into Product A (negative) and Product B (positive). This is:",opts:["Scope restraint","Group classification / sample fragmentation","Sampling error","An outlier effect"],a:1,why:"'The art of data analysis is to reduce dimensions rather than expand them.'"},
+{id:"M3-50",m:3,q:"A correlation is visible over a wide range but disappears over a narrow range. This caution is called:",opts:["Sample fragmentation","Scope/range constraint","Non-sampling error","Multicollinearity"],a:1,why:"Always check the range of the analysis scope."},
+{id:"M3-51",m:3,q:"Which is NOT one of the five statistics shown by a box plot?",opts:["Minimum","Q1","Mode","Maximum"],a:2,why:"Min, Q1, Median (Q2), Q3, Max — plus outliers. Mode is not shown."},
+{id:"M3-52",m:3,q:"A box plot is described as especially effective for:",opts:["Predicting future values","Comparing distributions between groups","Testing hypotheses","Calculating correlation"],a:1,why:"Also identifies skew by comparing mean vs median."},
+{id:"M3-53",m:3,q:"In hypothesis testing, the null hypothesis H0 states:",opts:["There is a difference","There is no difference","The sample is biased","The p-value is significant"],a:1,why:"H0 = no difference; H1 = there is a difference."},
+{id:"M3-54",m:3,q:"What significance level (α) is normally used?",opts:["1%","5%","10%","50%"],a:1,why:"5% is the deck's stated norm."},
+{id:"M3-55",m:3,q:"Three age groups rated new product proposals and the P-value was less than 0.05. Conclusion?",opts:["The three groups do not differ","The three groups differ","The test should be redone as a t-test","There is a correlation"],a:1,why:"P < 0.05 → reject H0 → the groups differ. This was the ANOVA case."},
+{id:"M3-56",m:3,q:"What is the minimum sample size for substituting the sample SD when the population SD is unknown?",opts:["n ≥ 10","n ≥ 20","n ≥ 30","n ≥ 100"],a:2,why:"n ≥ 30 is stated as sufficient observations."},
+{id:"M3-57",m:3,q:"Cluster analysis ensures:",opts:["Homogeneity between groups, heterogeneity within","Homogeneity within groups, heterogeneity between groups","Equal group sizes","Labeled training data"],a:1,why:"Similar inside, different outside. Most representative use is customer segmentation."},
+{id:"M3-58",m:3,q:"Which metric is most commonly used to evaluate regression model performance?",opts:["P-value","Test R²","IQR","Euclidean distance"],a:1,why:"Test R²; if models tie, Simple is Best."},
+{id:"M4-09",m:4,q:"T-LAMP stands for:",opts:["TV Log Analytics Management Platform","Total Log Access Management Portal","TV Live Application Monitoring Platform","Terminal Log Archive Management Program"],a:0,why:"Device-identification platform, webOS 3.0 onward."},
+{id:"M4-10",m:4,q:"Which log stores CONTEXT NAME, MESSAGE ID, and Message Data as JSON key:value?",opts:["Activation Log","TV Normal Log","Search Log","App Installation Log"],a:1,why:"Normal Log saves all user actions from smart functions, services and apps."},
+{id:"M4-11",m:4,q:"Which log records Media Type values such as RF, STB, and IP?",opts:["TV Watching Log","VOD Selection Log","Normal Log","Activation Log"],a:0,why:"Broadcast via antenna / set-top box / LG Channel."},
+{id:"M4-12",m:4,q:"Which log contains 'domain' values like TV Show, LiveTV, Movie, and YouTube?",opts:["VOD Selection Log","Search Log","Watching Log","App Use History Log"],a:1,why:"Domain = the search category in the integrated search app."},
+{id:"M4-13",m:4,q:"Live EPG metadata is currently serviced for how many countries?",opts:["7","14","20","32"],a:1,why:"14 countries; created on the server, not received from the TV."},
+{id:"M4-14",m:4,q:"The Activation start date differs from what?",opts:["The date of the first search","The actual TV purchase date","The app installation date","The date of consent"],a:1,why:"It records when the server was linked, not when the TV was bought."},
+{id:"M4-15",m:4,q:"Which consent tier covers the Voice Search Log?",opts:["Basic Terms","Watching Information","Voice Service","No consent needed"],a:2,why:"Basic → Activation/Install/Search/UCM. Watching → Broadcast/VOD/Normal. Voice → Voice Search."},
+{id:"M4-16",m:4,q:"Personal identification information must be:",opts:["Stored in plain text for CS access","Transmitted in a secured section, never in plain text","Shared with CP partners","Deleted immediately on collection"],a:1,why:"Privacy Compliance gate — safe collection."},
+{id:"M4-17",m:4,q:"GDPR/CCPA full-usage-history requests are provided in which format and platform?",opts:["CSV via Intellytics","Excel via T-LAMP","Dashboard via Intellytics","GZ via SDP"],a:1,why:"CS → CSV; GDPR/CCPA → Excel via T-LAMP; Index Analysis → Dashboard via Intellytics."},
+{id:"M4-18",m:4,q:"How is access to Intellytics requested?",opts:["Through Jira or EP","By requesting an account or access authority for dashboard access","By email to Legal","Through the TV settings menu"],a:1,why:"T-LAMP goes through Jira or EP; Intellytics is an account/authority request."},
+{id:"M5-06",m:5,q:"What is LGE's three-step data management flow?",opts:["Collect/Secure → Integrate/Store → Analyze/Utilize","Plan → Do → Check","Extract → Transform → Load","Define → Measure → Improve"],a:0,why:"The backbone of the module."},
+{id:"M5-07",m:5,q:"DDL and EDL are integrated in the Data Portal by means of:",opts:["Manual export","Data Virtualization","Physical migration","Cloud backup"],a:1,why:"Device Data Lake + Enterprise Data Lake, virtually integrated."},
+{id:"M5-08",m:5,q:"DLMS stands for:",opts:["Data Lake Management System","Data Life Cycle Management System","Device Log Monitoring System","Digital License Management Service"],a:1,why:"Operates under Customer Data Governance."},
+{id:"M5-09",m:5,q:"Which tools are named as the self-service BI layer?",opts:["R and Python","MSTR and Tableau","Excel and Jira","T-LAMP and SDP"],a:1,why:"Excel = individual/local; MSTR & Tableau = self-service BI; R & Python = AI/ML sandbox."},
+{id:"M5-10",m:5,q:"Which team primarily uses Buzz Matrix?",opts:["CX","R&D","Sales/Marketing","Procurement"],a:0,why:"CX uses Buzz Matrix, T-LAMP, Intellytics for customer VoC and TV use data."},
+{id:"M5-11",m:5,q:"Which system provides automatic log collection for proactive failure sensing?",opts:["Prosense","DAVID","HERMES","LGCAP"],a:0,why:"Prosense sits alongside Hawkeye 2.0 (PainKiller) and the Beta Program."},
+{id:"M6-06",m:6,q:"What percentage responded that product service experience affects brand image?",opts:["55%","66%","77%","88%"],a:2,why:"77% — one of the drivers for DEJ."},
+{id:"M6-07",m:6,q:"DEJ aims to materialize products and services that are:",opts:["Cheap, Fast, Simple, Local","All, Smart, Agile, Perfect","Bold, Clear, Direct, Open","Safe, Secure, Stable, Scalable"],a:1,why:"The stated four qualities."},
+{id:"M6-08",m:6,q:"What are the three phases of the DEJ platform?",opts:["Collect → Store → Analyze","Explore → Materialize → Provide/Monitor Customer Value","Plan → Build → Ship","Recognize → Understand → Accept"],a:1,why:"Mirrors CEJ's Explore → Purchase → Use."},
+{id:"M6-09",m:6,q:"Which period does DEJ 1.0 cover?",opts:["2018–2023","2024–2025","2026 onward","2015–2018"],a:0,why:"1.0 expanded the serve platform and data connectivity."},
+{id:"M6-10",m:6,q:"What is the three-part DEJ experience ladder?",opts:["Connect Me → Recognize Me → Fit in with Me","Aware → Explore → Decide","Trigger → Accelerator → Tracker","First → Unique → New"],a:0,why:"Common value → beyond expectation → WoW!! experience value."},
+{id:"M6-11",m:6,q:"HEAVEN supports the integrated development of:",opts:["Mechanic, LCM, package","Circuit, power, picture quality, sound quality","SW virtual verification","Requirement management"],a:1,why:"HERMES covers mechanical/LCM/package; HEY!TAS is SW virtual verification."},
+{id:"M6-12",m:6,q:"Which system handles SW virtual verification?",opts:["HE-VPDS","HEY!TAS","HERMES","PINE"],a:1,why:"HE-VPDS is HW virtual verification; HEY!TAS is SW."},
+{id:"M6-13",m:6,q:"Under 'Provide Customer Value', which pillar covers SW upgrades delivered at the right time via PINE?",opts:["Personalization","Optimization","Specialization","Servitization"],a:1,why:"Personalization = tailored services; Optimization = PINE upgrades; Specialization = new products like StandbyMe Go."}
+];
+
+const BLANKS = [
+{id:"F1-01",m:1,text:"Digitalization of ___ — Digitization of ___ — ___ innovation.",ans:["Information","Process","Business"],alt:[],hint:"Three stages, in the deck's own fill-in form."},
+{id:"F1-02",m:1,text:"The common agreement on DX is: Business ___ focusing on Digital Technology.",ans:["Innovation"],alt:[],hint:"Not 'efficiency'."},
+{id:"F1-03",m:1,text:"Journey for Cultural Consensus: Recognize → ___ → ___ → Participate.",ans:["Understand","Accept"],alt:[],hint:"Realize, then grasp direction, then agree the method, then act."},
+{id:"F1-04",m:1,text:"Introduction of Digital Technology ≠ ___ of DX.",ans:["Completion"],alt:[],hint:"Adopting tools is not finishing the job."},
+{id:"F1-05",m:1,text:"DX fails most often because companies focus only on introducing technology and overlook ___.",ans:["People"],alt:["people"],hint:"The actual subject of execution."},
+{id:"F1-06",m:1,text:"The three roles of DX in C-D-P are ___, ___, and ___.",ans:["Trigger","Accelerator","Tracker"],alt:[],hint:"Understand customers / enable CX / monitor delivery."},
+{id:"F1-07",m:1,text:"C-D-P stands for ___ – ___ – ___.",ans:["CX","DX","Performance"],alt:["Customer Experience","Digital Transformation"],hint:"Note the dashes — not the same as CDP."},
+{id:"F1-08",m:1,text:"CX Core Values F.U.N = ___, ___, ___.",ans:["First","Unique","New"],alt:[],hint:"No.1 beyond expectation / life-changing / never-before."},
+{id:"F1-09",m:1,text:"CX Basic Values Q.C.D = ___, ___, ___.",ans:["Quality","Cost","Delivery"],alt:[],hint:"The baseline beneath F.U.N."},
+{id:"F1-10",m:1,text:"The four capabilities of a Citizen Data Scientist are Propose Task, ___, Collaboration with a Specialized Data Scientist, and ___.",ans:["Simple Analysis","Leading Task"],alt:["Simple analysis","Leading task"],hint:"Recruiting talent is NOT one of them."},
+{id:"F1-11",m:1,text:"The three work styles are Corrective, ___, and ___.",ans:["Preventive","Predictive"],alt:[],hint:"PDCA/DMAIC → FMEA/DRBFM → Big Data/AI."},
+{id:"F1-12",m:1,text:"HE's three DX axes are DX for Customer, DX for Company, and ___ Innovation.",ans:["Business Model"],alt:["Business model"],hint:"NOT Process Innovation."},
+{id:"F2-01",m:2,text:"Gartner's three V's of Big Data are ___, ___, and ___.",ans:["Volume","Velocity","Variety"],alt:[],hint:"Size, speed, diversity."},
+{id:"F2-02",m:2,text:"The deck's additional 'More V's' are Variability, ___, and ___.",ans:["Visualization","Volatility"],alt:[],hint:"NOT Veracity or Value — see the Check tab."},
+{id:"F2-03",m:2,text:"The containment relationship is AI ⊃ ___ ⊃ ___.",ans:["Machine Learning","Deep Learning"],alt:["ML","DL"],hint:"Outermost to innermost."},
+{id:"F2-04",m:2,text:"In the A-B-C relationship, A = AI, B = ___, C = ___.",ans:["Big Data","Cloud"],alt:["Cloud Computing"],hint:"More data → higher performance; computing power and storage."},
+{id:"F2-05",m:2,text:"Big data lets analysis shift from a ___ survey to a ___ survey.",ans:["sample","complete"],alt:["Sample","Complete"],hint:"Which removes sampling error."},
+{id:"F2-06",m:2,text:"The four stages of data-driven decision making are Descriptive, ___, ___, and ___.",ans:["Diagnostic","Predictive","Prescriptive"],alt:[],hint:"What happened → why → what will → what should I do."},
+{id:"F2-07",m:2,text:"The five-stage analysis process is based on the ___ methodology.",ans:["CRISP-DM"],alt:["CRISP DM","CRISPDM"],hint:"Cross Industry Standard Process for Data Mining."},
+{id:"F2-08",m:2,text:"Stage 1 of the analysis process is ___ the Issue.",ans:["Define"],alt:[],hint:"Always before collecting anything."},
+{id:"F2-09",m:2,text:"Excel is insufficient for Big Data because of ___ and ___.",ans:["Volume","Variety"],alt:[],hint:"Size, plus structured/semi/unstructured types."},
+{id:"F2-10",m:2,text:"Text Mining is a type of ___ data mining.",ans:["unstructured"],alt:["Unstructured"],hint:"As opposed to relational."},
+{id:"F3-01",m:3,text:"The four analysis methods in order are ___ → ___ → ___ → ___.",ans:["DDA","EDA","CDA","PDA"],alt:[],hint:"Descriptive, Exploratory, Confirmatory, Predictive."},
+{id:"F3-02",m:3,text:"The median of a sorted dataset is the ___-th value.",ans:["(N+1)/2"],alt:["(n+1)/2","N+1/2","(N + 1) / 2"],hint:"For even N, average the two middle values."},
+{id:"F3-03",m:3,text:"Sum of Squares = Σ(individual value − ___)².",ans:["average"],alt:["mean","X̄"],hint:"Squared because the raw deviations sum to zero."},
+{id:"F3-04",m:3,text:"Variance is the Sum of Squares divided by ___.",ans:["n-1"],alt:["n − 1","n minus 1","(n-1)","n-1)"],hint:"Not n. One less than the sample size."},
+{id:"F3-05",m:3,text:"For data [1,2,2,2,3] the Sum of Squares is ___ and the variance is ___.",ans:["2","0.5"],alt:[".5"],hint:"2 ÷ (5−1)."},
+{id:"F3-06",m:3,text:"Range = ___ − ___.",ans:["Maximum","Minimum"],alt:["Max","Min"],hint:"The crudest dispersion measure."},
+{id:"F3-07",m:3,text:"IQR = ___ − ___.",ans:["Q3","Q1"],alt:[],hint:"The body length of the box."},
+{id:"F3-08",m:3,text:"Box plot outlier fences are placed at ___ × IQR beyond the box.",ans:["1.5"],alt:["1.5x","1·5"],hint:"Beyond that lie extreme outliers."},
+{id:"F3-09",m:3,text:"Measures NOT affected by outliers: ___ and ___.",ans:["Median","IQR"],alt:[],hint:"Mean, SD and Range all are affected."},
+{id:"F3-10",m:3,text:"H0 states there is ___ difference; H1 states there ___ a difference.",ans:["no","is"],alt:[],hint:"Null vs alternative."},
+{id:"F3-11",m:3,text:"If P-value ≤ α, you choose ___. If P-value > α, you choose ___.",ans:["H1","H0"],alt:[],hint:"Small p kills the null."},
+{id:"F3-12",m:3,text:"The normal significance level α is ___%.",ans:["5"],alt:["5%","0.05"],hint:"Equivalent to 0.05."},
+{id:"F3-13",m:3,text:"Continuous data, two groups → ___ test. Continuous data, three groups → ___.",ans:["2-Sample T-Test","ANOVA"],alt:["2 Sample T Test","T-Test","Two-Sample T-Test"],hint:"The top row of the test grid."},
+{id:"F3-14",m:3,text:"Discrete data, two groups → ___ test. Discrete data, three groups → ___ test.",ans:["2-Proportion","Chi-Square"],alt:["2 Proportion","Two-Proportion","Chi Square","Chi-square"],hint:"The bottom row of the test grid."},
+{id:"F3-15",m:3,text:"The correlation coefficient always falls between ___ and ___.",ans:["-1","1"],alt:["−1","+1"],hint:"±1 = perfect linear relationship."},
+{id:"F3-16",m:3,text:"The Z-score used for a 95% confidence level is ___.",ans:["1.96"],alt:[],hint:"Sample SD is usable when n ≥ 30."},
+{id:"F3-17",m:3,text:"The four sampling methods are Simple Random, ___, ___, and ___.",ans:["Stratified Random","Systematic","Cluster"],alt:["Stratified","Systematic Sampling","Cluster Sampling"],hint:"Gallup used the stratified one in 1936."},
+{id:"F3-18",m:3,text:"Discrete data types are ___ and ___; continuous data types are ___ and ___.",ans:["Nominal","Ordinal","Interval","Ratio"],alt:[],hint:"Categories, ranks, equal intervals, true zero."},
+{id:"F3-19",m:3,text:"The three types of machine learning are ___, ___, and ___ Learning.",ans:["Supervised","Unsupervised","Reinforcement"],alt:[],hint:"Labeled, unlabeled, reward/punishment."},
+{id:"F3-20",m:3,text:"The four components of a time series are Trend, ___, ___, and ___.",ans:["Seasonal","Cycle","Irregular"],alt:[],hint:"12-month repeats, economic expansion/contraction, unknown changes."},
+{id:"F4-01",m:4,text:"T-LAMP stands for TV ___ ___ Management Platform.",ans:["Log","Analytics"],alt:[],hint:"The device-identification platform."},
+{id:"F4-02",m:4,text:"T-LAMP holds device ___ data; Intellytics holds device ___ data.",ans:["identification","non-identification"],alt:["identified","non identification","anonymized"],hint:"One can trace to a device, one cannot."},
+{id:"F4-03",m:4,text:"The ___ Log is the starting point for data collection.",ans:["Activation"],alt:[],hint:"Generated at first server access."},
+{id:"F4-04",m:4,text:"Broadcast Watching and VOD Selection logs require a minimum of ___ minutes of use.",ans:["5"],alt:["five"],hint:"Under Watching Information consent."},
+{id:"F4-05",m:4,text:"TV data is stored for ___ month, then archived for ___ years.",ans:["1","2"],alt:["one","two"],hint:"Single unit of data → DB → T-LAMP/Intellytics/SDP."},
+{id:"F4-06",m:4,text:"The three collection review gates are ___ Review, Privacy ___, and CP ___ Review.",ans:["Legal","Compliance","Contract"],alt:[],hint:"Criteria / safe collection / data item."},
+{id:"F4-07",m:4,text:"The two privacy regulations named as destruction triggers are ___ and ___.",ans:["GDPR","CCPA"],alt:[],hint:"European and Californian."},
+{id:"F4-08",m:4,text:"Content usage inside CP apps such as Netflix and YouTube is ___ collected.",ans:["not"],alt:["NOT","never"],hint:"Explicit in the deck."},
+{id:"F5-01",m:5,text:"LGE's data management flow is Collect/Secure → ___ → ___.",ans:["Integrate/Store","Analyze/Utilize"],alt:["Integrate / Store","Analyze / Utilize"],hint:"Three steps."},
+{id:"F5-02",m:5,text:"DDL stands for ___ Data Lake and EDL stands for ___ Data Lake.",ans:["Device","Enterprise"],alt:[],hint:"Joined by Data Virtualization in the Data Portal."},
+{id:"F5-03",m:5,text:"A ___ ___ is a repository for various types of raw data in LG Electronics.",ans:["Data","Lake"],alt:[],hint:"Two words."},
+{id:"F5-04",m:5,text:"HE members request data extraction or consulting through ___.",ans:["Jira"],alt:["JIRA"],hint:"Project code HEDATAPLFM."},
+{id:"F5-05",m:5,text:"___ detects customer pain points before customers report them.",ans:["Hawkeye"],alt:["Hawkeye 2.0","PainKiller"],hint:"Also known as PainKiller."},
+{id:"F6-01",m:6,text:"DEJ stands for ___ ___ Journey.",ans:["Development","Experience"],alt:[],hint:"The R&D counterpart to CEJ."},
+{id:"F6-02",m:6,text:"DEJ 3333: check Pain Point in ___ hours; respond in ___ days; explore ___ CX values per year; increase member satisfaction by ___%.",ans:["3","3","3","30"],alt:["three","thirty"],hint:"Three threes and a thirty."},
+{id:"F6-03",m:6,text:"DEJ 1.0 ran ___–___; DEJ 2.0 ran ___–___; DEJ 3.0 begins ___.",ans:["2018","2023","2024","2025","2026"],alt:[],hint:"Six years, two years, then onward."},
+{id:"F6-04",m:6,text:"HE's vision is 'Sync to ___, Open to ___.'",ans:["You","All"],alt:[],hint:"Two words, both capitalised."},
+{id:"F6-05",m:6,text:"The 5 Main Customer Experiences (3C 2S) are Connectivity, ___, ___, ___, and ___.",ans:["Care","Customization","Servitization","Sustainability"],alt:[],hint:"Care — NOT Core. Your compiled notes have this wrong."},
+{id:"F6-06",m:6,text:"The DEJ experience ladder is ___ Me → ___ Me → Fit in with Me.",ans:["Connect","Recognize"],alt:[],hint:"Common value → beyond expectation → WoW!!"},
+{id:"F6-07",m:6,text:"DEJ materializes products and services that are All, ___, ___, and Perfect.",ans:["Smart","Agile"],alt:[],hint:"Four qualities."}
 ];
 
 
@@ -1204,6 +1390,7 @@ function renderBlocks(blocks, term){
 /* ===================== app state ===================== */
 var state = {
   tab: "drill",
+  scoreMode: "drill",
   searchTerm: "",
   drill: {
     moduleFilter: "all",
@@ -1212,6 +1399,14 @@ var state = {
     index: 0,
     answers: {},
     flagged: {}
+  },
+  blanks: {
+    moduleFilter: "all",
+    shuffle: false,
+    order: [],
+    index: 0,
+    answers: {},
+    hints: {}
   },
   study: {
     open: { 1: true }
@@ -1233,17 +1428,20 @@ var CARD_DECKS = [
 ];
 
 /* ===================== score / pass-line ===================== */
-function computeScore(){
-  var ids = state.drill.order;
+function computeScoreFor(section){
+  var ids = section.order;
   var answered = 0, correct = 0;
   for(var i = 0; i < ids.length; i++){
-    var a = state.drill.answers[ids[i]];
+    var a = section.answers[ids[i]];
     if(a){ answered++; if(a.correct) correct++; }
   }
   return { answered: answered, correct: correct, pct: answered ? Math.round((correct / answered) * 100) : 0 };
 }
+function computeScore(){ return computeScoreFor(state.drill); }
+function computeBlanksScore(){ return computeScoreFor(state.blanks); }
 function updateScoreStrip(){
-  var s = computeScore();
+  var s = state.scoreMode === "blanks" ? computeBlanksScore() : computeScore();
+  document.getElementById("scoreLabel").textContent = state.scoreMode === "blanks" ? "BLANKS" : "DRILL";
   document.getElementById("scorePct").textContent = s.pct + "%";
   document.getElementById("scoreFrac").textContent = s.correct + "/" + s.answered;
   var fill = document.getElementById("passFill");
@@ -1259,7 +1457,8 @@ function onTabSwitch(tab){
   });
   document.querySelectorAll(".tab-panel").forEach(function(p){ p.classList.remove("active"); });
   document.getElementById("tab-" + tab).classList.add("active");
-  if(tab === "drill") renderDrill();
+  if(tab === "drill"){ state.scoreMode = "drill"; renderDrill(); }
+  if(tab === "blanks"){ state.scoreMode = "blanks"; renderBlanks(); }
   if(tab === "study") renderStudy();
   if(tab === "cards") renderCards();
   if(tab === "cheat") renderCheat();
@@ -1434,6 +1633,220 @@ function renderDrillSummary(){
   "</div>";
 }
 
+/* ===================== BLANKS ===================== */
+function normalizeAns(s){
+  return String(s).trim().toLowerCase().replace(/\s+/g, " ").replace(/\.+$/, "");
+}
+function blankAcceptedFor(b, i){
+  var accepted = [normalizeAns(b.ans[i])];
+  (b.alt || []).forEach(function(a){ accepted.push(normalizeAns(a)); });
+  return accepted;
+}
+function buildBlanksSet(subsetIds){
+  var pool;
+  if(subsetIds){
+    pool = subsetIds.slice();
+  } else if(state.blanks.moduleFilter === "all"){
+    pool = BLANKS.map(function(b){ return b.id; });
+  } else {
+    var m = state.blanks.moduleFilter;
+    pool = BLANKS.filter(function(b){ return b.m === m; }).map(function(b){ return b.id; });
+  }
+  if(state.blanks.shuffle) pool = shuffleArr(pool);
+  state.blanks.order = pool;
+  state.blanks.index = 0;
+  state.blanks.answers = {};
+}
+function onBlanksFilter(mod){
+  state.blanks.moduleFilter = mod === "all" ? "all" : Number(mod);
+  buildBlanksSet();
+  renderBlanks();
+}
+function onBlanksShuffleToggle(){
+  state.blanks.shuffle = !state.blanks.shuffle;
+  buildBlanksSet();
+  renderBlanks();
+}
+function onBlanksReset(){
+  state.blanks.hints = {};
+  buildBlanksSet();
+  renderBlanks();
+}
+function onBlankHintToggle(bid){
+  state.blanks.hints[bid] = !state.blanks.hints[bid];
+  renderBlanks();
+}
+function onBlankCheck(bid){
+  var b = BLANKS.filter(function(x){ return x.id === bid; })[0];
+  var inputs = document.querySelectorAll("#tab-blanks .blank-input[data-blank-idx]");
+  var values = [];
+  var allFilled = true;
+  inputs.forEach(function(inp){
+    var idx = Number(inp.dataset.blankIdx);
+    values[idx] = inp.value;
+    if(!inp.value.trim()) allFilled = false;
+  });
+  if(!allFilled || values.length === 0) return;
+  var results = values.map(function(v, i){
+    return blankAcceptedFor(b, i).indexOf(normalizeAns(v)) !== -1;
+  });
+  var correct = results.every(function(r){ return r; });
+  state.blanks.answers[bid] = { values: values, results: results, correct: correct, revealed: false };
+  renderBlanks();
+}
+function onBlankShowAnswer(bid){
+  var b = BLANKS.filter(function(x){ return x.id === bid; })[0];
+  state.blanks.answers[bid] = {
+    values: b.ans.slice(),
+    results: b.ans.map(function(){ return false; }),
+    correct: false,
+    revealed: true
+  };
+  renderBlanks();
+}
+function onBlankNext(){
+  state.blanks.index++;
+  renderBlanks();
+}
+function onBlankInputKeydown(e, bid){
+  if(e.key !== "Enter") return;
+  e.preventDefault();
+  if(state.blanks.answers[bid]) onBlankNext();
+  else onBlankCheck(bid);
+}
+function onBlanksRetry(mode){
+  var ids;
+  if(mode === "wrong"){
+    ids = state.blanks.order.filter(function(id){
+      var a = state.blanks.answers[id];
+      return a && !a.correct;
+    });
+  } else {
+    ids = [];
+  }
+  if(ids.length === 0) return;
+  if(state.blanks.shuffle) ids = shuffleArr(ids);
+  buildBlanksSet(ids);
+  renderBlanks();
+}
+
+function renderBlanks(){
+  var el = document.getElementById("tab-blanks");
+  var chips = ["all", 1, 2, 3, 4, 5, 6].map(function(m){
+    var label = m === "all" ? "All" : moduleTag(m);
+    var active = state.blanks.moduleFilter === (m === "all" ? "all" : m);
+    return '<button class="chip' + (active ? " chip-active" : "") + '" onclick="onBlanksFilter(\'' + m + '\')">' + label + "</button>";
+  }).join("");
+
+  var head = '<div class="panel drill-controls">' +
+    '<div class="chip-row">' + chips + "</div>" +
+    '<div class="drill-toggles">' +
+      '<button class="chip' + (state.blanks.shuffle ? " chip-active" : "") + '" onclick="onBlanksShuffleToggle()">Shuffle</button>' +
+      '<button class="chip chip-ghost" onclick="onBlanksReset()">Reset</button>' +
+    "</div>" +
+  "</div>";
+
+  var body;
+  if(state.blanks.order.length === 0){
+    body = '<div class="panel"><p class="muted">No blanks match this filter.</p></div>';
+  } else if(state.blanks.index >= state.blanks.order.length){
+    body = renderBlanksSummary();
+  } else {
+    body = renderBlankQuestion();
+  }
+  el.innerHTML = head + body;
+  if(state.scoreMode === "blanks") updateScoreStrip();
+}
+
+function renderBlankQuestion(){
+  var bid = state.blanks.order[state.blanks.index];
+  var b = BLANKS.filter(function(x){ return x.id === bid; })[0];
+  var a = state.blanks.answers[bid];
+  var parts = b.text.split("___");
+
+  var sentence = "";
+  for(var i = 0; i < parts.length; i++){
+    sentence += escapeHtml(parts[i]);
+    if(i < parts.length - 1){
+      var val = a ? a.values[i] : "";
+      var cls = "blank-input";
+      var reveal = "";
+      if(a){
+        if(a.revealed){
+          cls += " blank-revealed";
+        } else if(a.results[i]){
+          cls += " blank-correct";
+        } else {
+          cls += " blank-wrong";
+          reveal = '<span class="blank-answer-reveal mono">' + escapeHtml(b.ans[i]) + "</span>";
+        }
+      }
+      var w = Math.max(4, b.ans[i].length + 2);
+      sentence += '<input type="text" class="' + cls + '" style="width:' + w + 'ch" ' +
+        'data-blank-idx="' + i + '" value="' + escapeHtml(val) + '" ' + (a ? "disabled" : "") +
+        ' autocomplete="off" autocapitalize="off" spellcheck="false" ' +
+        'onkeydown="onBlankInputKeydown(event,\'' + bid + '\')">' + reveal;
+    }
+  }
+
+  var hintShown = !!state.blanks.hints[bid];
+  var hintHtml = hintShown ? '<div class="blank-hint">' + escapeHtml(b.hint) + "</div>" : "";
+  var revealedNote = (a && a.revealed) ? '<div class="blank-revealed-note">Answer shown — marked incorrect.</div>' : "";
+
+  var actions;
+  if(a){
+    actions = '<button class="btn-primary" onclick="onBlankNext()">Next →</button>';
+  } else {
+    actions =
+      '<button class="btn-ghost" onclick="onBlankHintToggle(\'' + bid + '\')">' + (hintShown ? "Hide hint" : "Hint") + "</button>" +
+      '<button class="btn-ghost" onclick="onBlankShowAnswer(\'' + bid + '\')">Show answer</button>' +
+      '<button class="btn-primary" onclick="onBlankCheck(\'' + bid + '\')">Check</button>';
+  }
+
+  return '<div class="panel blank-question">' +
+    '<div class="q-meta mono"><span>' + escapeHtml(bid) + " &middot; " + moduleTag(b.m) + "</span></div>" +
+    '<div class="blank-sentence">' + sentence + "</div>" +
+    hintHtml + revealedNote +
+    '<div class="drill-progress mono muted">Item ' + (state.blanks.index + 1) + " / " + state.blanks.order.length + "</div>" +
+    '<div class="drill-actions">' + actions + "</div>" +
+  "</div>";
+}
+
+function renderBlanksSummary(){
+  var s = computeBlanksScore();
+  var byModule = {};
+  state.blanks.order.forEach(function(id){
+    var b = BLANKS.filter(function(x){ return x.id === id; })[0];
+    var a = state.blanks.answers[id];
+    if(!byModule[b.m]) byModule[b.m] = { correct: 0, total: 0 };
+    byModule[b.m].total++;
+    if(a && a.correct) byModule[b.m].correct++;
+  });
+  var weakest = null, weakestPct = 101;
+  Object.keys(byModule).forEach(function(m){
+    var d = byModule[m];
+    var pct = d.total ? (d.correct / d.total) * 100 : 100;
+    if(pct < weakestPct){ weakestPct = pct; weakest = m; }
+  });
+  var rows = Object.keys(byModule).sort().map(function(m){
+    var d = byModule[m];
+    var pct = d.total ? Math.round((d.correct / d.total) * 100) : 0;
+    var mark = (m === weakest) ? ' <span class="badge badge-high">WEAKEST</span>' : "";
+    return "<tr><td>" + moduleTag(m) + mark + "</td><td>" + d.correct + " / " + d.total + "</td><td>" + pct + "%</td></tr>";
+  }).join("");
+
+  var wrongCount = state.blanks.order.filter(function(id){ var a = state.blanks.answers[id]; return a && !a.correct; }).length;
+
+  return '<div class="panel drill-summary">' +
+    '<h3 class="block-h">Set complete — ' + s.correct + " / " + s.answered + " (" + s.pct + "%)</h3>" +
+    '<p class="muted">Pass line is 80%. ' + (s.pct >= 80 ? "You cleared it on this set." : "Below pass line on this set — drill the weak module again.") + "</p>" +
+    '<div class="table-wrap"><table><thead><tr><th>Module</th><th>Score</th><th>%</th></tr></thead><tbody>' + rows + "</tbody></table></div>" +
+    '<div class="drill-actions">' +
+      '<button class="btn-primary" ' + (wrongCount ? "" : "disabled") + ' onclick="onBlanksRetry(\'wrong\')">Retry wrong only (' + wrongCount + ")</button>" +
+    "</div>" +
+  "</div>";
+}
+
 /* ===================== STUDY ===================== */
 function onStudySearch(value){
   state.searchTerm = value.trim();
@@ -1594,6 +2007,7 @@ document.querySelectorAll(".tab-btn").forEach(function(btn){
   btn.addEventListener("click", function(){ onTabSwitch(btn.dataset.tab); });
 });
 buildDrillSet();
+buildBlanksSet();
 renderDrill();
 
 </script>
