@@ -1,0 +1,5 @@
+{
+  "rewrites": [
+    { "source": "/", "destination": "/DX_Level1_Study_App.html" }
+  ]
+}

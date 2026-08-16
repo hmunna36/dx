@@ -1,0 +1,1601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DX Level 1 — Study App</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ground:   #F2F4F8;
+  --grid:     #DDE3ED;
+  --panel:    #FFFFFF;
+  --ink:      #131722;
+  --muted:    #5A6478;
+  --series-a: #6B2D8C;
+  --series-b: #0E8F87;
+  --alert:    #C2384A;
+  --amber:    #B0761A;
+  --font-display: 'Archivo', 'Helvetica Neue', Arial Narrow, sans-serif;
+  --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+* { box-sizing: border-box; }
+html,body{ margin:0; padding:0; }
+body{
+  background-color: var(--ground);
+  background-image:
+    repeating-linear-gradient(0deg, var(--grid) 0px, var(--grid) 1px, transparent 1px, transparent 24px),
+    repeating-linear-gradient(90deg, var(--grid) 0px, var(--grid) 1px, transparent 1px, transparent 24px);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+a { color: var(--series-a); }
+
+/* ---------- focus ---------- */
+:focus-visible{
+  outline: 2px solid var(--series-a);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* ---------- layout shell ---------- */
+.app-shell{
+  max-width: 900px;
+  margin: 0 auto;
+  min-height: 100vh;
+  background: rgba(255,255,255,0.0);
+}
+
+header.site-header{
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: var(--panel);
+  border-bottom: 1px solid var(--grid);
+  padding: 10px 16px 12px;
+}
+.header-row{
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:10px;
+  flex-wrap: wrap;
+}
+.brand{
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  font-size: 1.15rem;
+  text-transform: uppercase;
+}
+.brand small{
+  display:block;
+  font-family: var(--font-body);
+  font-weight: 400;
+  text-transform: none;
+  color: var(--muted);
+  font-size: 0.72rem;
+  letter-spacing: normal;
+  margin-top: 2px;
+}
+.score-readout{
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--muted);
+  text-align:right;
+  white-space: nowrap;
+}
+.score-readout b{ color: var(--ink); font-size:1rem; }
+
+/* ---------- the pass line ---------- */
+.pass-line{
+  position: relative;
+  margin-top: 10px;
+  height: 34px;
+}
+.pass-line-track{
+  position: relative;
+  height: 14px;
+  background: var(--ground);
+  border: 1px solid var(--grid);
+  border-radius: 2px;
+  overflow: visible;
+}
+.pass-line-fill{
+  position: absolute;
+  top:0; left:0; bottom:0;
+  width: 0%;
+  background: var(--series-a);
+  transition: width 0.25s ease, background-color 0.25s ease;
+}
+.pass-line-fill.pass{ background: var(--series-b); }
+.pass-line-ticks{
+  position: relative;
+  height: 16px;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--muted);
+}
+.pass-line-ticks i{
+  position:absolute;
+  top:2px;
+  transform: translateX(-50%);
+  border-left: 1px solid var(--grid);
+  padding-left: 3px;
+  font-style: normal;
+  height: 6px;
+}
+.pass-line-rule{
+  position:absolute;
+  top:-4px; bottom:-4px;
+  left: 80%;
+  width: 0;
+  border-left: 2px solid var(--alert);
+}
+.pass-line-rule .pass-label{
+  position:absolute;
+  top:-16px;
+  left: 4px;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: var(--alert);
+  white-space: nowrap;
+}
+
+/* ---------- tab bar ---------- */
+nav.tab-bar{
+  position: sticky;
+  top: 0;
+  z-index: 29;
+  display:flex;
+  gap: 4px;
+  overflow-x: auto;
+  background: var(--panel);
+  border-bottom: 1px solid var(--grid);
+  padding: 0 12px;
+  -webkit-overflow-scrolling: touch;
+}
+nav.tab-bar.stuck{ top: 0; }
+.tab-btn{
+  font-family: var(--font-display);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  font-size: 0.82rem;
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  padding: 12px 12px 10px;
+  color: var(--muted);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.tab-btn:hover{ color: var(--ink); }
+.tab-btn[aria-selected="true"]{
+  color: var(--ink);
+  border-bottom-color: var(--series-a);
+}
+
+main{ padding: 16px; padding-bottom: 60px; }
+.tab-panel{ display:none; }
+.tab-panel.active{ display:block; }
+
+/* ---------- shared card/panel ---------- */
+.panel{
+  background: var(--panel);
+  border: 1px solid var(--grid);
+  border-radius: 4px;
+  padding: 16px;
+}
+.panel + .panel{ margin-top: 12px; }
+
+.mono{ font-family: var(--font-mono); }
+.muted{ color: var(--muted); }
+
+.badge{
+  display:inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border-radius: 3px;
+  border: 1px solid currentColor;
+}
+.badge-easy{ color: var(--series-b); }
+.badge-medium{ color: var(--amber); }
+.badge-high{ color: var(--alert); }
+.badge-deck{ color: var(--series-a); }
+.badge-notes{ color: var(--amber); }
+
+table{
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+  margin: 10px 0;
+}
+caption{ text-align:left; font-family: var(--font-mono); font-size:0.72rem; color:var(--muted); margin-bottom:4px; }
+th, td{
+  text-align: left;
+  border: 1px solid var(--grid);
+  padding: 6px 8px;
+  vertical-align: top;
+}
+th{
+  background: var(--ground);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+.table-wrap{ overflow-x:auto; }
+
+mark{
+  background: #FCE8B4;
+  color: inherit;
+  border-radius: 2px;
+  padding: 0 1px;
+}
+
+button{ font-family: inherit; }
+
+/* reduced motion */
+@media (prefers-reduced-motion: reduce){
+  *{ transition: none !important; animation: none !important; }
+}
+
+/* ---------- chips / controls ---------- */
+.chip-row{ display:flex; flex-wrap:wrap; gap:6px; }
+.chip{
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  background: var(--ground);
+  border: 1px solid var(--grid);
+  border-radius: 3px;
+  padding: 6px 10px;
+  color: var(--ink);
+  cursor: pointer;
+}
+.chip:hover{ border-color: var(--series-a); }
+.chip-active{
+  background: var(--series-a);
+  border-color: var(--series-a);
+  color: #fff;
+}
+.chip-ghost{ color: var(--muted); }
+.drill-controls{ display:flex; flex-wrap:wrap; gap:14px; align-items:center; justify-content:space-between; }
+.drill-toggles{ display:flex; gap:6px; }
+
+/* ---------- drill question ---------- */
+.q-meta{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; font-size:0.72rem; color:var(--muted); margin-bottom:10px; }
+.flag-btn{
+  margin-left:auto;
+  background:none;
+  border:1px solid var(--grid);
+  border-radius:3px;
+  padding:4px 8px;
+  font-family: var(--font-mono);
+  font-size:0.7rem;
+  color: var(--muted);
+  cursor:pointer;
+}
+.flag-active{ border-color: var(--amber); color: var(--amber); }
+.q-text{
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin: 4px 0 16px;
+}
+.opt-list{ display:flex; flex-direction:column; gap:8px; }
+.option{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  text-align:left;
+  background: var(--panel);
+  border: 1px solid var(--grid);
+  border-radius: 4px;
+  padding: 10px 12px;
+  cursor: pointer;
+  font-size: 0.92rem;
+  color: var(--ink);
+}
+.option:hover:not(:disabled){ border-color: var(--series-a); }
+.option:disabled{ cursor: default; }
+.opt-letter{
+  flex: 0 0 auto;
+  width: 22px; height:22px;
+  display:flex; align-items:center; justify-content:center;
+  border: 1px solid var(--grid);
+  border-radius: 3px;
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+.opt-correct{ border-color: var(--series-b); background: rgba(14,143,135,0.08); }
+.opt-correct .opt-letter{ border-color: var(--series-b); color: var(--series-b); }
+.opt-wrong{ border-color: var(--alert); background: rgba(194,56,74,0.08); }
+.opt-wrong .opt-letter{ border-color: var(--alert); color: var(--alert); }
+.why-line{
+  margin-top: 14px;
+  padding: 10px 12px;
+  background: var(--ground);
+  border-left: 3px solid var(--series-a);
+  font-size: 0.88rem;
+  color: var(--ink);
+}
+.drill-progress{ margin-top: 14px; font-size: 0.72rem; }
+.drill-actions{ margin-top: 12px; display:flex; gap:10px; flex-wrap:wrap; }
+.btn-primary, .btn-ghost{
+  font-family: var(--font-display);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  font-size: 0.8rem;
+  border-radius: 3px;
+  padding: 10px 16px;
+  cursor: pointer;
+}
+.btn-primary{ background: var(--series-a); border: 1px solid var(--series-a); color: #fff; }
+.btn-primary:disabled{ opacity: 0.4; cursor:default; }
+.btn-ghost{ background: var(--panel); border: 1px solid var(--grid); color: var(--ink); }
+.btn-ghost:disabled{ opacity: 0.4; cursor:default; }
+
+/* ---------- study ---------- */
+.search-label{ display:block; font-size:0.7rem; color:var(--muted); margin-bottom:6px; text-transform:uppercase; letter-spacing:0.03em; }
+.search-input{
+  width: 100%;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  padding: 10px 12px;
+  border: 1px solid var(--grid);
+  border-radius: 4px;
+  background: var(--ground);
+  color: var(--ink);
+}
+.module-header{
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+}
+.module-title{ font-weight: 700; flex: 1 1 auto; }
+.module-num{ color: var(--series-a); margin-right: 4px; }
+.chevron{ font-family: var(--font-mono); color: var(--muted); width: 16px; text-align:center; }
+.module-body{ margin-top: 12px; }
+.block-h{ font-family: var(--font-display); text-transform: uppercase; letter-spacing:0.02em; font-size: 0.95rem; margin: 18px 0 6px; }
+.block-h:first-child{ margin-top: 0; }
+.block-h4{ font-family: var(--font-display); font-size: 0.82rem; color: var(--muted); text-transform: uppercase; letter-spacing:0.03em; margin: 14px 0 4px; }
+.module-body p, .module-body ul, .module-body ol{ font-size: 0.9rem; }
+.module-body ul, .module-body ol{ padding-left: 1.2em; }
+.module-body li{ margin: 3px 0; }
+
+/* ---------- cards ---------- */
+.cards-panel{ display:flex; flex-direction:column; align-items:center; gap:12px; }
+.cards-counter{ align-self:flex-end; font-size:0.78rem; }
+.flashcard{
+  position: relative;
+  width: 100%;
+  min-height: 200px;
+  perspective: 1200px;
+  cursor: pointer;
+}
+.flashcard-tall{ min-height: 280px; }
+.flashcard-face{
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  border: 1px solid var(--grid);
+  border-radius: 4px;
+  background: var(--panel);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  transform: rotateY(0deg);
+  transition: transform 0.35s ease;
+}
+.flashcard-back{ transform: rotateY(180deg); background: var(--ground); }
+.flashcard.is-flipped .flashcard-front{ transform: rotateY(-180deg); }
+.flashcard.is-flipped .flashcard-back{ transform: rotateY(0deg); }
+.flashcard-scroll{ max-height: 100%; overflow-y: auto; text-align: center; font-size: 0.95rem; line-height:1.45; }
+.flashcard-back .flashcard-scroll{ font-family: var(--font-mono); font-size: 0.85rem; text-align:left; }
+.cards-nav{ display:flex; gap:8px; }
+
+/* ---------- cheat ---------- */
+.cheat-title{ margin-top:0; }
+.cheat-sheet ul{ margin: 4px 0 12px; }
+
+/* ---------- check ---------- */
+.check-note p{ margin:0; font-size:0.9rem; color:var(--muted); }
+.check-card{ display:flex; flex-direction:column; gap:6px; }
+.check-claim{ font-weight:700; }
+.check-deck{ font-size: 0.88rem; color: var(--ink); }
+
+/* ---------- print ---------- */
+@media print{
+  body{ background: #fff !important; }
+  header.site-header, nav.tab-bar, #tab-drill, #tab-study, #tab-cards, #tab-check{ display:none !important; }
+  .panel{ border: none; padding: 0; }
+  main{ padding: 0; }
+  .cheat-sheet{ break-inside: avoid; }
+}
+
+/* ---------- responsive ---------- */
+@media (max-width: 420px){
+  .brand{ font-size: 1rem; }
+  .score-readout{ font-size: 0.78rem; }
+  main{ padding: 10px; }
+  .panel{ padding: 12px; }
+}
+
+</style>
+</head>
+<body>
+<div class="app-shell">
+
+<header class="site-header">
+  <div class="header-row">
+    <div class="brand">DX LEVEL 1<small>2024 HE Domain &middot; 80 to pass</small></div>
+    <div class="score-readout" id="scoreReadout"><b id="scorePct">0%</b> &middot; <span id="scoreFrac">0/0</span></div>
+  </div>
+  <div class="pass-line" aria-hidden="false" role="img" aria-label="Score progress against the 80 percent pass line">
+    <div class="pass-line-track">
+      <div class="pass-line-fill" id="passFill"></div>
+      <div class="pass-line-rule"><span class="pass-label">PASS</span></div>
+    </div>
+    <div class="pass-line-ticks">
+      <i style="left:0%">0</i><i style="left:25%">25</i><i style="left:50%">50</i><i style="left:75%">75</i><i style="left:100%">100</i>
+    </div>
+  </div>
+</header>
+
+<nav class="tab-bar" id="tabBar" role="tablist" aria-label="Sections">
+  <button class="tab-btn" role="tab" data-tab="drill" aria-selected="true">Drill</button>
+  <button class="tab-btn" role="tab" data-tab="study" aria-selected="false">Study</button>
+  <button class="tab-btn" role="tab" data-tab="cards" aria-selected="false">Cards</button>
+  <button class="tab-btn" role="tab" data-tab="cheat" aria-selected="false">Cheat</button>
+  <button class="tab-btn" role="tab" data-tab="check" aria-selected="false">Check</button>
+</nav>
+
+<main>
+  <section class="tab-panel active" id="tab-drill"></section>
+  <section class="tab-panel" id="tab-study"></section>
+  <section class="tab-panel" id="tab-cards"></section>
+  <section class="tab-panel" id="tab-cheat"></section>
+  <section class="tab-panel" id="tab-check"></section>
+</main>
+
+</div>
+
+<script>
+"use strict";
+const QUESTIONS = [
+{id:"M1-01",m:1,q:"What is the fundamental definition of Digitization?",opts:["Business Innovation","Digitization of Process","Conversion of Analogue to Digital","Creation of new Business Models"],a:2,why:"Digitization = data layer. Digitalization = process. DX = business."},
+{id:"M1-02",m:1,q:"Which term describes the 'Adaption' phase focusing on the digitization of processes?",opts:["Digitalization","Digital Transformation","Data Conversion","Analogue Adaptation"],a:0,why:"Digitalization is the middle stage — adapting processes."},
+{id:"M1-03",m:1,q:"What is the 'Common Agreement' on the definition of Digital Transformation?",opts:["Automating manual Excel tasks","Business Innovation focusing on Digital Technology","Increasing the number of IT staff","Replacing all analogue equipment with sensors"],a:1,why:"The deck's stated common agreement, verbatim."},
+{id:"M1-04",m:1,q:"Fill the blanks: Digitalization of (___) — Digitization of (___) — (___) innovation",opts:["Process / Information / Data","Information / Process / Business","Business / Data / Process","Data / Business / Information"],a:1,why:"Information → Process → Business. A known subjective question."},
+{id:"M1-05",m:1,q:"Which economy is associated with Airbnb and Socar?",opts:["Subscription Economy","Platform Economy","Sharing Economy","On-Demand Economy"],a:2,why:"Sharing Economy — shared access to assets."},
+{id:"M1-06",m:1,q:"Which economic model is exemplified by Netflix and Dollar Shave Club?",opts:["Sharing Economy","Subscription Economy","On-Demand Economy","Traditional Economy"],a:1,why:"Recurring payment for ongoing access = Subscription."},
+{id:"M1-07",m:1,q:"The 'Platform Economy' is represented by which group?",opts:["Netflix, YouTube, Hulu","Airbnb, Zipcar, Lyft","Facebook, Instagram, TikTok","Uber, Starbucks, Amazon"],a:2,why:"Social platforms connecting many-to-many users."},
+{id:"M1-08",m:1,q:"Which is NOT part of the Starbucks Digital Flywheel?",opts:["Rewards","Payment","Personalization","Physical Store Expansion"],a:3,why:"The flywheel is Rewards, Payment, Personalization, Ordering — all digital."},
+{id:"M1-09",m:1,q:"When did Starbucks introduce Free Wi-Fi in all branches?",opts:["2008","2012","2015","2021"],a:0,why:"Free Wi-Fi 2008; Fast Drive Thru 2012."},
+{id:"M1-10",m:1,q:"What did Starbucks introduce in 2012?",opts:["Siren Order","Fast Drive Thru","Mobile Payment","Customized Menu"],a:1,why:"2012 = Fast Drive Thru."},
+{id:"M1-11",m:1,q:"Nike's D2C stands for what?",opts:["Data to Computer","Digital to Consumer","Direct Communication with customers","Delivery to Cloud"],a:2,why:"The deck spells it as Direct Communication with customers."},
+{id:"M1-12",m:1,q:"Which Nike acquisition provided 'Preference/Behavior Data'?",opts:["RTFKT","Zodiac","NRC","NTC"],a:1,why:"Zodiac = behavior data. RTFKT = Fashion NFT."},
+{id:"M1-13",m:1,q:"What is Nike's Metaverse + NFT service called?",opts:["Nike Training Club","Nike Running Club","Nike Cryptokicks","Nike Digital Flywheel"],a:2,why:"Cryptokicks = Metaverse + NFT."},
+{id:"M1-14",m:1,q:"What share of Nike's annual sales is targeted for D2C by 2025?",opts:["25%","30%","50%","70%"],a:2,why:"30% at the time of the deck, targeting 50% by '25."},
+{id:"M1-15",m:1,q:"Which Nike community engages runners?",opts:["NTC","NRC","RTFKT","SNKRS"],a:1,why:"NRC = Nike Running Club; NTC = Nike Training Club."},
+{id:"M1-16",m:1,q:"Which Amazon service targets students?",opts:["Prime Student","Amazon Locker","Prime Video","Whole Foods Discount"],a:0,why:"Prime Student is the named student benefit."},
+{id:"M1-17",m:1,q:"Does DX require learning and using every latest technology?",opts:["Yes, all tech is mandatory","No — the focus is business model innovation","Only for tech-industry companies","Only for the CEO"],a:1,why:"The deck answers 'No' to both tech questions explicitly."},
+{id:"M1-18",m:1,q:"'Introduction of Digital Technology ≠ ______'",opts:["Business Innovation","Completion of DX","Data Literacy","Operational Efficiency"],a:1,why:"Adopting tech is not the same as completing DX."},
+{id:"M1-19",m:1,q:"What is described as 'a key digital capability and a way to understand customers and businesses'?",opts:["3D Printing","The use of Big Data","Robotic arms","New materials"],a:1,why:"Big data use is the named key capability."},
+{id:"M1-20",m:1,q:"DX success rate in traditional industries (oil, automobiles, pharma) as of 2019?",opts:["4–11%","26%","30%","70%"],a:0,why:"4–11% traditional; below 26% even in digital industries."},
+{id:"M1-21",m:1,q:"Overall DX success rate in 2017?",opts:["5%","8%","12%","20%"],a:0,why:"5% in 2017 → 8% in 2019."},
+{id:"M1-22",m:1,q:"Most common reason companies fail at DX?",opts:["Lack of budget","Focusing only on 'Introducing Technology' and overlooking 'People'","Using too much Big Data","Not enough cloud storage"],a:1,why:"People — the actual subject of execution — is the overlooked factor."},
+{id:"M1-23",m:1,q:"What is the correct order of the Journey for Cultural Consensus?",opts:["Understand → Recognize → Accept → Participate","Recognize → Understand → Accept → Participate","Recognize → Accept → Understand → Participate","Accept → Recognize → Understand → Participate"],a:1,why:"Recognize → Understand → Accept → Participate."},
+{id:"M1-24",m:1,q:"What is the FINAL stage in the Journey for Cultural Consensus?",opts:["Recognize","Understand","Participate","Accept"],a:2,why:"Participate — participating in the execution of changes."},
+{id:"M1-25",m:1,q:"Choose the INCORRECT item as a Citizen Data Scientist capability.",opts:["Propose Task","Securing / Recruiting Top DX Talent","Simple Analysis","Collaboration with a specialized Data Scientist"],a:1,why:"The four are Propose Task, Simple Analysis, Collaboration, Leading Task. Recruiting is a trap."},
+{id:"M1-26",m:1,q:"What is a Citizen Data Scientist?",opts:["A professional with a PhD in AI","A field worker with data use capabilities","A government employee who tracks data","An IT technician who repairs sensors"],a:1,why:"Domain expert in the field who gains data capability."},
+{id:"M1-27",m:1,q:"Why are Citizen Data Scientists needed?",opts:["Professional data scientists are too expensive","The supply of professional data scientists is insufficient","To replace all professional data scientists","To manage office payroll"],a:1,why:"Market grows ~30%/yr but professional supply is insufficient."},
+{id:"M1-28",m:1,q:"Which role transforms practical issues into Data issues?",opts:["DX Project Team","DX Facilitator","Data Engineer","AI Specialist"],a:1,why:"DX Facilitator: find the KPI, turn practical issues into data issues."},
+{id:"M1-29",m:1,q:"Which role executes data collection and establishes the DB?",opts:["Data Scientist","AI Specialist","Data Engineer","Data Governance"],a:2,why:"Data Engineer builds collection and databases."},
+{id:"M1-30",m:1,q:"Which is responsible for Data Operation Strategy and constructing a Data Portal?",opts:["Data Scientist","Data Governance","DX Facilitator","Project Leader"],a:1,why:"Data Governance owns operation strategy and the portal."},
+{id:"M1-31",m:1,q:"What is the primary function of the DX CoE?",opts:["Building physical sensors","Spreading DX special capability and providing Use Cases","Hiring only AI majors","Replacing the Project Leader"],a:1,why:"CoE = Center of Excellence: spread capability, provide use cases, support tasks."},
+{id:"M1-32",m:1,q:"Which work style aims to 'completely get rid of the reason of the issue' in advance?",opts:["Corrective","Predictive","Preventive","Traditional"],a:2,why:"Preventive (FMEA, DRBFM). Corrective = PDCA/DMAIC. Predictive = Big Data/AI."},
+{id:"M1-33",m:1,q:"Shifting work to 'Predictive' involves using what?",opts:["PDCA and DMAIC","Big Data and AI","FMEA and DRBFM","Manual checks"],a:1,why:"Predictive is the Big Data/AI tier."},
+{id:"M1-34",m:1,q:"Which is NOT one of the DX activity axes of the HE Division?",opts:["DX for Customer","DX for Company","Process Innovation","Business Model Innovation"],a:2,why:"The three axes are DX for Customer, DX for Company, Business Model Innovation."},
+{id:"M1-35",m:1,q:"In the C-D-P system, which are the three roles of DX?",opts:["Trigger, Accelerator, Tracker","Plan, Do, Check","Collect, Store, Analyze","Define, Measure, Improve"],a:0,why:"Trigger (insight), Accelerator (solutions), Tracker (monitor)."},
+{id:"M2-01",m:2,q:"Which organization defines Big Data via Volume, Velocity, and Variety information assets?",opts:["McKinsey","Gartner","IDC","Wikipedia"],a:1,why:"Gartner owns the 3V definition."},
+{id:"M2-02",m:2,q:"Which definition describes data beyond the storage/management/analysis scope of a typical DBMS, and is explicitly subjective and changing?",opts:["Gartner","McKinsey","IDC","NIA"],a:1,why:"McKinsey — the definition is subjective and will continue to change."},
+{id:"M2-03",m:2,q:"According to the SOURCE DECK, which three V's characterize Big Data?",opts:["Volume, Velocity, Veracity","Volume, Velocity, Variety","Volume, Value, Variety","Velocity, Veracity, Value"],a:1,why:"The deck names Volume, Velocity, Variety (Gartner) and separately lists Variability, Visualization, Volatility.",src:"deck"},
+{id:"M2-04",m:2,q:"According to your COMPILED NOTES, the '5 V's' add which two beyond Volume/Velocity/Variety?",opts:["Variability and Volatility","Veracity and Value","Visualization and Variability","Volatility and Visualization"],a:1,why:"Notes say Veracity + Value. The deck does NOT contain these — see the Check tab.",src:"notes"},
+{id:"M2-05",m:2,q:"Which is NOT one of the 'More V's' listed in the deck?",opts:["Variability","Visualization","Volatility","Veracity"],a:3,why:"Deck's extras are Variability, Visualization, Volatility."},
+{id:"M2-06",m:2,q:"What is the correct containment relationship?",opts:["ML ⊃ AI ⊃ Deep Learning","AI ⊃ Machine Learning ⊃ Deep Learning","Deep Learning ⊃ AI ⊃ ML","AI and ML are separate fields"],a:1,why:"AI is the outermost concept; rule-based algorithms also count as AI."},
+{id:"M2-07",m:2,q:"'Rule: rabbits like carrots. Fact: Bunny is a rabbit. Output: Bunny likes carrots.' This is an example of what?",opts:["Deep Learning","Deductive Reasoning (still AI)","Unsupervised Learning","Association Rule"],a:1,why:"Rule-based deductive reasoning is AI without being ML."},
+{id:"M2-08",m:2,q:"In the A-B-C relationship, what does Cloud provide?",opts:["Labeled training data","Computing power and data storage","Business strategy","Customer consent"],a:1,why:"A=AI, B=Big Data (more data → higher AI performance), C=Cloud (computing power)."},
+{id:"M2-09",m:2,q:"Which statement about big data analysis is INCORRECT?",opts:["Insights can be obtained from big data","Singularities that were overlooked can be captured","We can better understand the population through sample surveys","A case-oriented inductive approach is possible"],a:2,why:"Big data lets you move FROM sample survey TO complete survey — that's the point."},
+{id:"M2-10",m:2,q:"Correct order of the development stages of data-driven decision making?",opts:["Prediction → Description → Diagnosis → Prescription","Description → Diagnosis → Prediction → Prescription","Diagnosis → Description → Prediction → Prescription","Description → Prediction → Diagnosis → Prescription"],a:1,why:"What happened → Why → What will happen → What should I do."},
+{id:"M2-11",m:2,q:"Which decision-making stage answers 'What should I do?'",opts:["Descriptive","Diagnostic","Predictive","Prescriptive"],a:3,why:"Prescriptive is the highest-value, highest-difficulty stage."},
+{id:"M2-12",m:2,q:"The 5-stage data analysis process is based on which methodology?",opts:["CRISP-DM","Six Sigma DMAIC","Agile Scrum","PDCA"],a:0,why:"CRISP-DM = Cross Industry Standard Process for Data Mining."},
+{id:"M2-13",m:2,q:"What is the correct order of the 5-stage data analysis process?",opts:["Collect → Define → Preprocess → Visualize → Insight","Define the Issue → Collect/Extract → Preprocess → Visualize/Analyze → Draw and Apply Insight","Define → Preprocess → Collect → Analyze → Insight","Collect → Preprocess → Define → Visualize → Insight"],a:1,why:"Defining the issue always comes first."},
+{id:"M3-01",m:3,q:"Data is extracted every Monday for 2 months. Which sampling method is this?",opts:["Simple Random Sampling","Systematic Sampling","Cluster Sampling","Stratified Random Sampling"],a:1,why:"Regular intervals of time or space = Systematic."},
+{id:"M3-02",m:3,q:"Which method divides the population into groups and then randomly samples from each group?",opts:["Simple Random","Systematic","Cluster","Stratified Random"],a:3,why:"Stratified — Gallup's 1936 method."},
+{id:"M3-03",m:3,q:"Which method selects a random cluster and then surveys within it?",opts:["Cluster Sampling","Stratified Sampling","Systematic Sampling","Simple Random Sampling"],a:0,why:"Cluster: pick the cluster first, then survey inside it."},
+{id:"M3-04",m:3,q:"Which data quality means 'regardless of who collects or measures, and no matter how many repetitions, the values should be the same'?",opts:["Timeliness","Validity","Precision","Completeness"],a:2,why:"Precision = repeatability. Accuracy = closeness to the true value."},
+{id:"M3-05",m:3,q:"Which data quality means data should be close to the true values?",opts:["Precision","Accuracy","Validity","Consistency"],a:1,why:"Accuracy targets truth; precision targets consistency."},
+{id:"M3-06",m:3,q:"Which quality means the meaning and criteria of data are the same regardless of time and space?",opts:["Consistency","Completeness","Timeliness","Sufficiency"],a:0,why:"Consistency — same criteria, unit, measurement method."},
+{id:"M3-07",m:3,q:"Which quality is violated when a dataset contains missing values and outliers?",opts:["Validity","Completeness","Timeliness","Representativeness"],a:1,why:"Completeness: appropriate range, no missing values, no outliers."},
+{id:"M3-08",m:3,q:"In the 1936 election case, why did the Literary Digest poll fail despite surveying 2.36 million people?",opts:["The sample was too small","It surveyed only the affluent class — poor representativeness","It used stratified sampling","The data was collected too late"],a:1,why:"Bias beats size. Gallup got it right with only 1,500 via stratified sampling."},
+{id:"M3-09",m:3,q:"As data size increases, what happens to errors?",opts:["Both sampling and non-sampling error decrease","Sampling error decreases while non-sampling error increases","Both increase","Neither changes"],a:1,why:"Stated under Sufficiency."},
+{id:"M3-10",m:3,q:"Gold medal / Silver medal / Bronze medal is which data type?",opts:["Nominal","Ordinal","Interval","Ratio"],a:1,why:"Order exists but the differences aren't defined = Ordinal."},
+{id:"M3-11",m:3,q:"Temperature is which data type?",opts:["Nominal","Ordinal","Interval","Ratio"],a:2,why:"Interval — no absolute zero point."},
+{id:"M3-12",m:3,q:"'8m is twice the length of 4m' demonstrates which data type?",opts:["Interval","Ratio","Ordinal","Nominal"],a:1,why:"Ratio data has a true origin at 0, so ratios are meaningful."},
+{id:"M3-13",m:3,q:"Arrange the data analysis methods in correct sequence.",opts:["DDA → CDA → EDA → PDA","DDA → EDA → CDA → PDA","EDA → DDA → CDA → PDA","DDA → EDA → PDA → CDA"],a:1,why:"Descriptive → Exploratory → Confirmatory → Predictive."},
+{id:"M3-14",m:3,q:"Which analysis formulates hypotheses and verifies their truth for decision-making?",opts:["DDA","EDA","CDA","PDA"],a:2,why:"CDA = Confirmatory, the hypothesis-testing stage."},
+{id:"M3-15",m:3,q:"Which is NOT affected by outliers?",opts:["Mean","Standard Deviation","Range","Median"],a:3,why:"Median and IQR resist outliers; mean, SD and range do not."},
+{id:"M3-16",m:3,q:"For data sorted ascending with N values, the median is at which position?",opts:["N/2","(N+1)/2","(N−1)/2","N/2 + 1"],a:1,why:"(N+1)/2. For even N, average the two middle values."},
+{id:"M3-17",m:3,q:"For data [1, 2, 2, 2, 3] with mean 2, what is the variance?",opts:["0.4","0.5","2.0","1.0"],a:1,why:"Sum of Squares = 2; variance = 2 ÷ (5−1) = 0.5. Divide by n−1, not n."},
+{id:"M3-18",m:3,q:"Variance is calculated by dividing the Sum of Squares by what?",opts:["n","n − 1","n + 1","√n"],a:1,why:"Sample variance divides by (n − 1)."},
+{id:"M3-19",m:3,q:"Why are deviations squared before summing?",opts:["To make the unit smaller","Because without squaring the deviations sum to zero","To remove outliers","To convert to a percentage"],a:1,why:"(1−2)+(2−2)+(2−2)+(2−2)+(3−2) = 0, so squaring is required."},
+{id:"M3-20",m:3,q:"IQR is calculated as:",opts:["Q3 − Q1","Q2 − Q1","Max − Min","Q3 + Q1"],a:0,why:"Interquartile Range = Q3 − Q1, the box body length."},
+{id:"M3-21",m:3,q:"In a box plot, outlier fences are placed at what multiple of IQR?",opts:["1.0 × IQR","1.5 × IQR","2.0 × IQR","2.5 × IQR"],a:1,why:"1.5 × IQR marks mild outliers; beyond that are extreme outliers."},
+{id:"M3-22",m:3,q:"If P-value = 0.03 and α = 0.05, what do you conclude?",opts:["Choose H0 — no difference","Choose H1 — there is a difference","The test is invalid","Increase the sample size"],a:1,why:"P ≤ α → reject H0. P < 0.05 means there IS a difference."},
+{id:"M3-23",m:3,q:"Which test compares averages across THREE groups of continuous data?",opts:["2-Sample T-Test","ANOVA","2-Proportion Test","Chi-Square Test"],a:1,why:"3+ groups + continuous = ANOVA."},
+{id:"M3-24",m:3,q:"Which test compares a ratio across TWO groups of discrete data?",opts:["2-Sample T-Test","ANOVA","2-Proportion Test","Chi-Square Test"],a:2,why:"2 groups + discrete/ratio = 2-Proportion Test."},
+{id:"M3-25",m:3,q:"Line A has 34% defects and Line B 26%, but the P-value is greater than 0.05. What do you conclude?",opts:["Line A is significantly worse","There is no significant difference in defect rate","The data is invalid","Repeat with a chi-square test"],a:1,why:"Raw percentages can differ while the test finds no significant difference."},
+{id:"M3-26",m:3,q:"A correlation coefficient r = 0.8 but the p-value is 0.09. What is the conclusion?",opts:["Strong correlation confirmed","There is no correlation, regardless of r","Weak but valid correlation","Recalculate r"],a:1,why:"If p > 0.05 there is no correlation no matter what r shows."},
+{id:"M3-27",m:3,q:"Correlation coefficient r always falls between:",opts:["0 and 1","−1 and 1","−100 and 100","0 and 100"],a:1,why:"−1 to 1; ±1 = perfect linear relationship."},
+{id:"M3-28",m:3,q:"Which estimation reflects error by giving a range?",opts:["Point Estimation","Interval Estimation","Mode Estimation","Descriptive Estimation"],a:1,why:"Point estimation gives one value and ignores error."},
+{id:"M3-29",m:3,q:"What Z-score is used for a 95% confidence level?",opts:["1.64","1.96","2.33","2.58"],a:1,why:"95% → Z = 1.96. Sample SD may substitute when n ≥ 30."},
+{id:"M3-30",m:3,q:"What is the process of dividing data into similar groups called?",opts:["Regression Analysis","Classification Analysis","Cluster Analysis","Time Series Analysis"],a:2,why:"Cluster Analysis — unsupervised; homogeneity within, heterogeneity between."},
+{id:"M3-31",m:3,q:"Which PDA type uses labeled data with a CONTINUOUS Y?",opts:["Classification Analysis","Regression Analysis","Cluster Analysis","Association Rule"],a:1,why:"Regression = supervised, continuous Y. Classification = supervised, discrete Y."},
+{id:"M3-32",m:3,q:"Which machine learning type uses UNLABELED data?",opts:["Supervised Learning","Unsupervised Learning","Reinforcement Learning","Deductive Learning"],a:1,why:"Unsupervised = problems without answers. Reinforcement learns via reward/punishment."},
+{id:"M3-33",m:3,q:"KNN classifies a new point by:",opts:["Fitting a regression line","Calculating Euclidean distance and taking a majority vote of the K nearest","Clustering all data first","Testing a hypothesis"],a:1,why:"Distance → pick K nearest → majority vote."},
+{id:"M3-34",m:3,q:"Which time series component represents long-term fluctuations due to changes in population, resources, and technology?",opts:["Seasonal","Cycle","Trend","Irregular"],a:2,why:"Trend = long-term. Seasonal = 12-month cycles. Cycle = economic expansion/contraction."},
+{id:"M3-35",m:3,q:"'If shoppers buy diapers, they buy beer' is an example of:",opts:["Cluster Analysis","Association Rule Analysis","Regression Analysis","Time Series Analysis"],a:1,why:"Association Rule — the Shopping Cart Rule, If-Then co-occurrence."},
+{id:"M3-36",m:3,q:"If several predictive models have the same Test R², which should you choose?",opts:["The most complex one","The simplest one — Simple is Best","The one with most variables","The newest algorithm"],a:1,why:"Principles of Economics: simplest adequate model wins."},
+{id:"M4-01",m:4,q:"What is TV Device Data?",opts:["Only broadcast viewing records","All behavioral information data used by users via Smart TVs","Manufacturing data from the TV factory","Retail sales data for TVs"],a:1,why:"All user behavioral data via Smart TV."},
+{id:"M4-02",m:4,q:"Which log becomes the starting point for data collection?",opts:["Search Log","Activation Log","Normal Log","VOD Selection Log"],a:1,why:"Generated when the user first accesses the server to use the Smart TV."},
+{id:"M4-03",m:4,q:"Which platform holds device-IDENTIFICATION data?",opts:["Intellytics","T-LAMP","SDP","CPPM"],a:1,why:"T-LAMP = identified device data. Intellytics = non-identification."},
+{id:"M4-04",m:4,q:"Content usage inside CP apps such as Netflix and YouTube is:",opts:["Collected in full","Collected only with consent","NOT collected","Collected after 5 minutes"],a:2,why:"Explicitly stated as not collected."},
+{id:"M4-05",m:4,q:"Broadcast Watching Log requires a minimum use duration of:",opts:["1 minute","5 minutes","10 minutes","30 minutes"],a:1,why:"Minimum 5 minutes of use under watching-information consent."},
+{id:"M4-06",m:4,q:"Which is NOT one of the three TV data collection review gates?",opts:["Legal Review","Privacy Compliance","CP Contract Review","Marketing Approval"],a:3,why:"The three gates are Legal Review, Privacy Compliance, CP Contract Review."},
+{id:"M4-07",m:4,q:"Which is NOT a trigger for TV data destruction?",opts:["Automatic deletion at end of saving period","User request under GDPR/CCPA","Service cancellation / terms withdrawal","Quarterly server maintenance"],a:3,why:"Three triggers only: period expiry, user request, unsubscription."},
+{id:"M4-08",m:4,q:"The TV data storage flow is:",opts:["1 week then 1 year","1 month then 2 years","3 months then 5 years","Indefinite retention"],a:1,why:"Single unit of data stored 1 month, then 2 years in T-LAMP/Intellytics/SDP."},
+{id:"M5-01",m:5,q:"What is a Data Lake?",opts:["A backup server","A repository for various types of raw data in LG Electronics","A customer survey tool","A dashboard product"],a:1,why:"Raw data repository, central to LGE's integrate/store layer."},
+{id:"M5-02",m:5,q:"How do HE members request data extraction or consulting?",opts:["By email to the CEO","Through Jira (HEDATAPLFM project)","Through a paper form","Via the TV settings menu"],a:1,why:"HE Data Platform Task Service runs through Jira."},
+{id:"M5-03",m:5,q:"Which system detects customer pain points before customers report them?",opts:["HERMES","Hawkeye","HEAVEN","PINE"],a:1,why:"Hawkeye 2.0 (PainKiller) — preemptive pain point detection."},
+{id:"M5-04",m:5,q:"Which two lakes are virtually integrated in the Data Portal?",opts:["DDL and EDL","T-LAMP and SDP","CDP and CRM","GMP and OBS"],a:0,why:"Device Data Lake and Enterprise Data Lake, joined by Data Virtualization."},
+{id:"M5-05",m:5,q:"Which team primarily uses CPPM and customer profile data?",opts:["R&D","CS / Quality","Platform Business","Procurement"],a:1,why:"CS/Quality works on purchased-customer VoC and pain points."},
+{id:"M6-01",m:6,q:"DEJ stands for:",opts:["Data Engineering Journey","Development Experience Journey","Digital Enterprise Journey","Device Evaluation Journey"],a:1,why:"The R&D-side counterpart to CEJ."},
+{id:"M6-02",m:6,q:"In DEJ 3333, what does the first '3!' target?",opts:["Check Pain Point/Requirement in 3 hours","Respond within 3 days","3 CX values per year","30% satisfaction increase"],a:0,why:"3 hours → 3 days → 3 values/year → 30% satisfaction."},
+{id:"M6-03",m:6,q:"Which DEJ phase covers 2024–2025?",opts:["DEJ 1.0","DEJ 2.0","DEJ 3.0","DEJ 4.0"],a:1,why:"1.0 = 2018–2023; 2.0 = 2024–2025; 3.0 = 2026~."},
+{id:"M6-04",m:6,q:"What are the 5 Main Customer Experiences (3C 2S)?",opts:["Connectivity, Core, Customization, Servitization, Sustainability","Connectivity, Care, Customization, Servitization, Sustainability","Connectivity, Care, Cost, Servitization, Sustainability","Connectivity, Care, Customization, Service, Speed"],a:1,why:"Care, not Core. Your compiled notes have this wrong — see the Check tab."},
+{id:"M6-05",m:6,q:"HE's stated vision phrase is:",opts:["Life's Good","Sync to You, Open to All","Innovation for All","Customer First, Always"],a:1,why:"Sync to You, Open to All."}
+];
+
+
+const STUDY = [
+{n:1, title:"DX in HE Company", complexity:"Easy", blocks:[
+  {type:"h", text:"Three stages of digital change (memorize order)"},
+  {type:"table", headers:["Term","Focus","Meaning"], rows:[
+    ["Digitization","Data","Conversion of Analogue to Digital"],
+    ["Digitalization","Process","Adaption — digitizing a process"],
+    ["Digital Transformation","Business","Creation — business innovation"]
+  ]},
+  {type:"p", text:"Fill-in-the-blank form used in the deck: “Digitalization of (Information) — Digitization of (Process) — (Business) innovation.”"},
+  {type:"p", text:"Common agreement on DX: “Business Innovation focusing on Digital Technology.” Most popular definition: “DX is a business model innovation using digital technology.”"},
+  {type:"h", text:"Key negations (high-frequency trap material)"},
+  {type:"ul", items:[
+    "Introduction of Digital Technology ≠ Completion of DX",
+    "You do NOT need to know and use all technologies",
+    "Using/learning the latest technology does NOT by itself make DX",
+    "Transformation should be led by field workers, not consultants"
+  ]},
+  {type:"p", text:"Four disruptive business models: Platform Economy, Subscription Economy, On-Demand Economy, Sharing Economy."},
+  {type:"h", text:"Advanced company cases"},
+  {type:"ul", items:[
+    "Starbucks — Digital Flywheel (Reward Program, Customized Menu, Siren/Mobile Order, Mobile Payment); Free Wi-Fi in all branches 2008; Fast Drive Thru 2012",
+    "Amazon — product recommendation based on customer data; Prime membership benefits (delivery innovation/locker, Prime Music/Video, Prime Student, Whole Foods discount)",
+    "Nike — D2C = Direct Communication with customers; 70 Million global membership ('21 2Q); 30% of annual sales of 50 trillion, targeting 50% by '25; NRC (Nike Running Club) + NTC (Nike Training Club); Nike Cryptokicks = Metaverse + NFT; acquired RTFKT (Fashion NFT) and Zodiac (Preference/Behavior Data)"
+  ]},
+  {type:"h", text:"DX failure statistics"},
+  {type:"table", headers:["Metric","Value"], rows:[
+    ["Traditional industries (oil, auto, pharma) success rate","4–11%"],
+    ["Digital industries (tech, media, telecom) success rate","Below 26%"],
+    ["Overall success rate 2017","5%"],
+    ["Overall success rate 2019","8%"],
+    ["Big data analysis market annual growth","~30%"]
+  ]},
+  {type:"p", text:"McKinsey-cited figures in the deck: >80% of companies established digitalization measures after COVID-19; only 30% achieved targeted value; of the remaining 70%, 44% did not achieve target and 26% created only limited value. Successful digitalization created 66% more value, improved capabilities by 82%, achieved 120% of target."},
+  {type:"p", text:"Main reason DX fails: companies focus only on “Introducing Technology” and overlook the actual subject of execution — People."},
+  {type:"h", text:"Journey for Cultural Consensus (memorize order)"},
+  {type:"p", text:"Recognize → Understand → Accept → Participate. (Recognize = realize changes; Understand = understand direction of changes; Accept = accept the method of changes; Participate = participate in execution of changes.)"},
+  {type:"h", text:"Citizen Data Scientist — four capabilities"},
+  {type:"p", text:"① Propose Task ② Simple Analysis ③ Collaboration with Specialized Data Scientist ④ Leading Task."},
+  {type:"p", text:"Needed because the big data analysis market grows ~30%/yr but the supply of professional data scientists is insufficient; augmented analysis means anyone can access Big Data/AI; Big Data/AI capability is becoming a basic capability. Modern professional data scientist requirement is NOT “AI major” but “majored in specific engineering + AI specialist.”"},
+  {type:"h", text:"DX roles"},
+  {type:"table", headers:["Role","Responsibility"], rows:[
+    ["Champion/Sponsor","Present core tasks, stimulate project, set budget, value-evaluate final products"],
+    ["Project Leader","Confirm range and direction, manage products per stage"],
+    ["DX Facilitator","Find the task's KPI, transform practical issues into Data issues, autonomous execution of DX duties"],
+    ["DX Project team","Specialist of field work; apply analysis output to tasks, check practical results"],
+    ["DX Strategy","Strategy establishment and operation, resource allocation, evaluation and change management"],
+    ["DX CoE","Spread DX special capability, provide Use Cases, instruct/support development tasks"],
+    ["Data Scientist","Develop analysis model, draw results"],
+    ["Data Governance","Strategy of data operation, construct Data Portal"],
+    ["Data Engineer","Execute data collection, establish DB"],
+    ["AI Specialist","AI design, AI application"]
+  ]},
+  {type:"h", text:"Work style evolution"},
+  {type:"table", headers:["Style","Approach","Tools"], rows:[
+    ["Corrective","Prevent recurrence; fix problems if they arise","PDCA, DMAIC"],
+    ["Preventive","Prevent in advance; completely remove the reason for the issue","FMEA, DRBFM"],
+    ["Predictive","Prediction management; respond to issues with prediction","Big Data, AI"]
+  ]},
+  {type:"h", text:"C-D-P Operating System"},
+  {type:"p", text:"Note the dash: C-D-P = CX–DX–Performance. Distinct from “CDP” which means either Career Development Path or Customer Data Platform."},
+  {type:"p", text:"Three parts: ① CX Goal ② C-D-P Way of Working ③ C-D-P Management System."},
+  {type:"p", text:"Three roles of DX within C-D-P: ① Trigger — better understand customers and identify insights using data. ② Accelerator — provide solutions for CX implementation using digital technology. ③ Tracker — monitor CX delivery using data."},
+  {type:"p", text:"CX value pyramid: CX Mission = Customer Delight. Core Values = F.U.N (First = No.1 experience beyond expectations; Unique = life-changing, differentiated experience; New = never-before, new experience). Basic Values = Q.C.D (Quality, Cost, Delivery)."},
+  {type:"p", text:"CEJ — Customer Experience Journey, 9 stages: Aware → Explore → Decide → Purchase → Deliver → On-board → Use → Maintain → Replace. Grouped as Explore (1–3), Purchase (4–6), Use (7–9), with Feedback running throughout."},
+  {type:"p", text:"C-D-P Management System — 4 elements to redesign: ① Organization ② Process ③ Performance management ④ Corporate culture."},
+  {type:"p", text:"5 Key Customer Experiences (3C 2S): Connectivity, Care, Customization, Servitization, Sustainability."},
+  {type:"p", text:"HE Company's three DX axes: ① DX for Customer (CX Innovation) ② DX for Company (Cost Structure Innovation) ③ Business Model Innovation. HE executes 14 DX tasks. “Process Innovation” is NOT one of the axes — classic trap."},
+  {type:"h", text:"Best practice case — DDM ('21)"},
+  {type:"p", text:"Offer discounts on Smart TV home screens to customers in the replacement cycle (target segment: customers with UHD TV more than 5 years old); improves recognize–search–purchase journey; result was increased transition rate and increased OLED TV sales volume."},
+  {type:"h", text:"Performance glossary"},
+  {type:"table", headers:["Term","Definition"], rows:[
+    ["NPS (Net Promoter Score)","% of promoters − % of detractors; measures customer loyalty"],
+    ["CXR (Customer eXperience Rating)","% satisfaction − % dissatisfaction; product/contact-point competitiveness"],
+    ["CXR-P","Satisfaction from “Product Use” perspective (function, utility, design, reliability, hygiene)"],
+    ["CXR-Mot","Satisfaction from “Moment of truth” / customer contact point (store, delivery, CS, care)"],
+    ["A.R.E Index","Acquisition, Retention, Engagement — loyalty by stage"],
+    ["ARPU","Average Revenue Per User = total revenue ÷ number of subscribers"],
+    ["MAU","Monthly Activity User — customers who interacted within a month"],
+    ["Brand Loyalty","Positive feelings/attachment toward a brand"]
+  ]},
+  {type:"h", text:"DX glossary"},
+  {type:"p", text:"DX for Company (efficiency from company data: purchasing, production, quality); DX for Customer (customer experience from device use, VoC, settings); Data NXI; Data Lake (repository for raw data types in LGE); Intellytics (LGE in-house integrated analytics system for AI and big data); CPPM (Customer Pain Point Management — cross-channel pain point analysis platform)."}
+]},
+{n:2, title:"Big Data and AI", complexity:"Easy", blocks:[
+  {type:"h", text:"Definitions of Big Data by source"},
+  {type:"table", headers:["Source","Key idea"], rows:[
+    ["Gartner","Cost-effective, innovative information assets with Volume (high-volume), Velocity (high-speed), Variety (diversity) for better implications and decision-making"],
+    ["McKinsey","Data beyond the storage/management/analysis scope of a typical DBMS; definition is subjective and will keep changing"],
+    ["IDC","Next-generation technology to draw value from large-scale data; supports super-fast collection, discovery, analysis"],
+    ["Wikipedia","Large structured or unstructured datasets beyond existing DB tools, plus the technology to draw value from them"],
+    ["NIA (National Information Society Agency)","The overall process/platform — HW, SW, and all processes covering big data"]
+  ]},
+  {type:"p", text:"Deck summary line: big data doesn't just mean big size of data — it refers to an information asset that can create value and gain insight for better decision making."},
+  {type:"h", text:"Characteristics — the V's (source conflict)"},
+  {type:"ul", items:[
+    "The deck explicitly names three: Volume, Velocity, Variety.",
+    "The deck's own “More V's…” list adds: Variability, Visualization, Volatility.",
+    "The deck does not mention Veracity or Value. The user's compiled notes do. Both are testable in the Drill tab, badged by source.",
+    "Speed spectrum: Batch → Periodic → Near Real Time → Real Time",
+    "Scale spectrum: TB → PB → EB → ZB → YB",
+    "Data structure: Structured + Semi-Structured + Unstructured"
+  ]},
+  {type:"p", text:"Why Excel isn't enough: Volume (size Excel can't handle) and Variety (structured + unstructured + semi-structured: text, voice, image data)."},
+  {type:"h", text:"Text Mining vs Data Mining"},
+  {type:"table", headers:["","Data Mining","Text Mining"], rows:[
+    ["Target","Numerical or categorized data","Text"],
+    ["Structure","Relational data structure","Structural or unstructured text"],
+    ["Purpose","Predict and foresee future results","Obtain appropriate information, process & categorize its meaning"],
+    ["Method","Machine Learning","Machine Learning, Indexing, Language Process, Ontology"]
+  ]},
+  {type:"p", text:"Natural Language = a naturally created language used by humans for communication. Text Mining is a type of unstructured data mining."},
+  {type:"h", text:"AI / ML / DL"},
+  {type:"p", text:"AI ⊃ Machine Learning ⊃ Deep Learning."},
+  {type:"ul", items:[
+    "AI = technology that recognizes / deduces / behaves / adapts like a human",
+    "ML = technology that improves AI function by the computer's self-learning",
+    "DL = processing information in an artificial neural network similar to human neurons",
+    "Rule-based algorithms are also AI. Deductive reasoning example from the deck: Rule “Rabbits like carrots” + Fact “Bunny is a rabbit” → Output “Bunny likes carrots.”",
+    "ML algorithm examples named: Logistic Regression, KNN, Decision Tree, Random Forest, Support Vector Machine"
+  ]},
+  {type:"p", text:"A-B-C relationship: AI ← Big Data (a large number of data → higher AI performance) ← Cloud Computing (computing power + data storage)."},
+  {type:"h", text:"Four characteristics / advantages of Big Data analysis"},
+  {type:"ul", items:[
+    "Can obtain Insight — check the total and the part together",
+    "Can capture ideal points / singularities that were overlooked — “sometimes the occurrence of singularity itself is a hidden pattern”",
+    "Can change from a sample survey to a complete survey — better understanding of the population, no sampling error",
+    "A case-oriented inductive approach is possible (Induction, contrasted with Deduction). “Data is a representation of facts.”"
+  ]},
+  {type:"p", text:"Trap: the correct statement is sample survey → complete survey. A statement phrased as “we can better understand the population through sample surveys” is INCORRECT."},
+  {type:"p", text:"Data-Driven Decision Making. Quote (Andrejs Dunkels): “It's easy to lie with statistics, but it's hard to tell the truth without statistics.”"},
+  {type:"h", text:"Four development stages (memorize order, increasing value and difficulty)"},
+  {type:"table", headers:["Stage","Question"], rows:[
+    ["Descriptive","What happened?"],
+    ["Diagnostic","Why did it happen?"],
+    ["Predictive","What will happen?"],
+    ["Prescriptive","What should I do?"]
+  ]},
+  {type:"p", text:"A/B Test: used in digital marketing and business decision-making; provide A and B to two groups of users respectively and find the better one from the result."},
+  {type:"h", text:"Data Analysis Process — 5 stages"},
+  {type:"p", text:"Based on CRISP-DM (Cross Industry Standard Process for Data Mining; CRISP-DM's own 6 steps: Understand Task → Understand Data → Prepare Data → Modelling → Evaluate → Develop)."},
+  {type:"ol", items:[
+    "Define the Issue — understand the field, define the issue objectively/subjectively",
+    "Collect/Extract Data — define data requirements, obtain data",
+    "Preprocess Data — correct/supplement missing values or errors",
+    "Visualize and Analyze — use tools, visualize, analyze",
+    "Draw and Apply Insight — derive insights, apply solutions"
+  ]},
+  {type:"p", text:"Cooking analogy used in the deck: Ingredient → Cooking Utensils → Chef → Delicious Cuisine → Customer Delight, mapping to Data → Data Analysis Tool → Prior Process/Analysis → Draw Insight → Customer Delight."}
+]},
+{n:3, title:"Data Types and Analysis Methods", complexity:"High", blocks:[
+  {type:"p", text:"Population vs Sample: Population = the group of interest you want to know about (e.g. all adult males in South Korea). Sample = a group extracted from the population for study (e.g. one thousand adults)."},
+  {type:"h", text:"Parameter vs Statistic"},
+  {type:"table", headers:["Measure","Parameter (population)","Statistic (sample)"], rows:[
+    ["Average","μ","X̄"],
+    ["Variance","σ²","s²"],
+    ["Standard deviation","σ","s"]
+  ]},
+  {type:"h", text:"Four sampling methods"},
+  {type:"table", headers:["Method","Definition"], rows:[
+    ["Simple Random Sampling","Each individual in the entire population has an equal chance of being selected"],
+    ["Stratified Random Sampling","Divide the population into several groups, then randomly sample from each group"],
+    ["Systematic Sampling","Sampling at regular intervals of time or space (e.g. one out of every hundred items on a line; extracting data every Monday)"],
+    ["Cluster Sampling","Divide data into clusters, select a random cluster, conduct a complete or random survey within it"]
+  ]},
+  {type:"h", text:"Eight data quality criteria"},
+  {type:"table", headers:["Criterion","Definition"], rows:[
+    ["Validity","Must contain the information you want to know; data items must sufficiently reflect the concept (Concept = Σ data items)"],
+    ["Timeliness","Data should be obtainable when needed; excessive delay is not ideal"],
+    ["Consistency","Meaning and criteria of the data are consistent regardless of time and space; criteria, unit, measurement method must be the same"],
+    ["Representativeness","The collected sample should represent the population"],
+    ["Accuracy","Data should be close to the true values"],
+    ["Precision","Regardless of who measures or collects, and no matter how many repetitions, the values should be the same"],
+    ["Completeness","The range of data is appropriate and there are no missing values or outliers"],
+    ["Sufficiency","A sufficient amount of data is ensured"]
+  ]},
+  {type:"h", text:"Representativeness case study"},
+  {type:"p", text:"Literary Digest (1936) mailed 10 million, surveyed 2.36 million, predicted Republican Landon would win — surveyed only the affluent class. Gallup surveyed 1,500 people using stratified sampling across the entire US and correctly predicted Roosevelt at 56%; Roosevelt actually won with 62%. Lesson: for a sample to represent a population you need ① a sufficient amount of data and ② evenness without bias. Bias beats size."},
+  {type:"h", text:"Sufficiency detail"},
+  {type:"ul", items:[
+    "As data size increases, sampling error decreases while non-sampling error increases.",
+    "Dimension = number of variables; 10 data in 1 dimension → 100 in 2D → 1000 in 3D.",
+    "For rare categories (e.g. a 0.1% complaint rate), even 1,000 customers may yield almost no complaint data — size the data to the analysis intent."
+  ]},
+  {type:"p", text:"Accuracy vs Precision (commonly confused — expect a question): Accuracy = closeness to the true value. Precision = repeatability/consistency regardless of who measures."},
+  {type:"p", text:"Data Quality Report contents: data type, data size, number of missing values, number of outliers, consistency (quality check block); average, mode, median, standard deviation (summary block)."},
+  {type:"h", text:"Data types"},
+  {type:"table", headers:["Class","Type","Definition","Examples"], rows:[
+    ["Discrete","Nominal","Simple categorical; cannot convey order or differences","Men/Women, Material 1/2/3, number of defects"],
+    ["Discrete","Ordinal","Grade categorical; indicates order but does not define differences","Gold/Silver/Bronze, High/Middle/Low, Satisfied/Neutral/Unsatisfied"],
+    ["Continuous","Interval","Divided into intervals, no absolute zero point, infinitely subdividable","Temperature, productivity/process capability index"],
+    ["Continuous","Ratio","Has an origin at 0; measures like length or volume","8m is twice 4m; 1 inch = 2.54cm"]
+  ]},
+  {type:"p", text:"Variables: Y = f(X). Y = Dependent / Response / Outcome variable. X = Independent / Explanatory / Predictor variable. In Y = 2X + 3, the 2 is the coefficient and the 3 is the constant. Attributes of interest are variables; constants are rarely the focus."},
+  {type:"h", text:"Four analysis methods — memorize the order and purpose"},
+  {type:"table", headers:["Stage","Name","Purpose"], rows:[
+    ["DDA","Descriptive Data Analysis","Foundational analysis; confirm the current state (result) by summarizing/aggregating the given data"],
+    ["EDA","Exploratory Data Analysis","Observe and understand collected data from various perspectives to discover new patterns or hypotheses"],
+    ["CDA","Confirmatory Data Analysis","Analysis for decision-making; formulate hypotheses and verify their truth"],
+    ["PDA","Predictive Data Analysis","Predict the value you want to confirm through the verified hypothesis"]
+  ]},
+  {type:"p", text:"Objective principle stated repeatedly in the deck: an assignment concludes not merely at the designated time but upon achieving its objectives; not every assignment requires a predictive model, so the procedure varies by objective. Exit points: DDA → assignment finished; EDA → derive insight; CDA → make decision; PDA → innovation in workplace."},
+  {type:"h", text:"DDA — Descriptive Data Analysis"},
+  {type:"p", text:"Purpose: what we want to know is a variable; variables are expressed through patterns and probabilities → Shape, Central tendency, Dispersion. Analogy: any circle can be drawn if you know its center point and radius; any data can be depicted if you know its central tendency and dispersion."},
+  {type:"table", headers:["Measure","Rule","Applies to","Outliers"], rows:[
+    ["Average (Arithmetic Mean)","X̄ = (1/n)Σxᵢ — sum of observed data ÷ number of observations","Continuous data","Significantly influenced"],
+    ["Median","Value in the middle when sorted ascending; the (N+1)/2-th value","Ordinal, continuous data","Not significantly influenced"],
+    ["Mode","Value with the highest frequency","Continuous and discrete data","Used as a supplementary measure; may not exist or may not be unique"]
+  ]},
+  {type:"p", text:"Median worked examples from the deck: N odd → 2,3,4,5,6,7,7,8,9 → median = 6. N even → 2,3,4,5,6,7,7,8,9,9 → median = 6.5."},
+  {type:"p", text:"“Flaw of Average”: would you cross a river with an average depth of 1 meter? Actual depths 0.5M and 3.2M. Average depth 4m ± 3m."},
+  {type:"p", text:"Mode is used instead of mean/median for nominal data (45 men, 30 women → men at 60% occupancy). For an ordinal scale where intervals can't be perceived: an athlete with Bronze, Silver, Gold, Gold, Gold — “average 2.4 medals” is meaningless, median = Gold, mode = Gold at 60%. For an equal-interval ordinal scale (Likert 1–5), responses 2,3,5,5,5 → Mode = 5 (60% chose “very satisfied”), average = 4 (which treats an ordinal scale as an interval scale, assuming equal intervals between reference points)."},
+  {type:"h", text:"Measures of dispersion"},
+  {type:"table", headers:["Measure","Formula","Note"], rows:[
+    ["Variance (s²)","Sum of Squares ÷ (n − 1)","Sum of Squares = Σ(individual value − average)²; unit is the square of the original unit"],
+    ["Standard deviation (s)","s = √(s²)","Square root of variance"],
+    ["Range (R)","Maximum − Minimum","Larger range = greater variability"]
+  ]},
+  {type:"p", text:"Worked example (deck's own numbers — reuse exactly): data [1, 2, 2, 2, 3], average = 2. Sum of Squares = (1−2)² + (2−2)² + (2−2)² + (2−2)² + (3−2)² = 2. (Without squaring, the deviations sum to 0 — that's why you square.) Variance = 2 ÷ (5−1) = 0.5. Standard deviation = √0.5. Range = 3 − 1 = 2."},
+  {type:"p", text:"Outlier sensitivity summary: NOT affected → Median, IQR. Affected → Mean, Standard Deviation, Range."},
+  {type:"h", text:"EDA — Exploratory Data Analysis"},
+  {type:"p", text:"Limit of DDA: what you can't see in numbers is visible on a graph. Raw data in a graph is understood at a glance; with huge complex Big Data it's often hard to see anything without a graph."},
+  {type:"p", text:"Four EDA types: ① Data Distribution ② Comparison by category ③ Changes over time ④ Find correlations between variables."},
+  {type:"p", text:"Graph selection: Discrete variable → pie chart, donut chart, stacked bar chart, Pareto chart (check share by category). Continuous variable → histogram, box plot (view central tendency and dispersion together). Trends over time → polygonal line, bar graph, control chart, box plot. Relationships → scatter plot."},
+  {type:"h", text:"Box Plot"},
+  {type:"ul", items:[
+    "Shows minimum, Q1 (25%), Q2/median (50%), Q3 (75%), maximum, plus mild and extreme outliers",
+    "IQR (Interquartile Range) = Q3 − Q1 — the body length of the box",
+    "Outlier fences at 1.5 × IQR beyond the box (mild outliers); further out are extreme outliers",
+    "Quartile positions: Q1 = X₍₍ₙ₊₁₎/₄₎, Q2 (median) = X₍₂₍ₙ₊₁₎/₄₎, Q3 = X₍₃₍ₙ₊₁₎/₄₎",
+    "What you get from it: easily identify 5 statistics plus mean and IQR; further investigate outliers; identify asymmetry in the distribution by comparing mean vs median; especially effective for comparing distributions between groups"
+  ]},
+  {type:"p", text:"Scatter plots: positive correlation (as X increases Y also increases), negative correlation (as X increases Y decreases), unrelated. High density vs low density indicates strength."},
+  {type:"h", text:"Two EDA cautions"},
+  {type:"ul", items:[
+    "Group classification / sample fragmentation: data that looks unrelated overall may split into Product A with negative correlation and Product B with positive correlation. “The art of data analysis is to reduce dimensions rather than expand them.”",
+    "Scope/range constraint: you may see a correlation over a wide range but not over a narrow range."
+  ]},
+  {type:"p", text:"John Tukey: “EDA is the attitude, flexibility, and spontaneity to discover what we believe exists, as well as what we believe does not exist.”"},
+  {type:"p", text:"EDA summary points: the purpose of analysis controls the whole process; EDA is a case-oriented inductive approach and an open debate without preconceptions; every result must be interpreted in business perspective; not all EDA findings are interesting — about 80% may just confirm what you already know; results need validation or correct interpretation to find insights."},
+  {type:"h", text:"CDA — Confirmatory Data Analysis"},
+  {type:"h4", text:"Four-step process"},
+  {type:"ol", items:[
+    "Set up hypothesis — Null hypothesis H0 = “there is no difference”; Alternative hypothesis H1 = “there is a difference”",
+    "Determine significance level (α) — normally 5%",
+    "Calculate P-value via a statistics tool — the probability that the actual claimed hypothesis is wrong, calculated using sample data",
+    "Decide whether to reject H0 — if P-value > α → choose H0; if P-value ≤ α → choose H1"
+  ]},
+  {type:"p", text:"Repeated shorthand throughout the deck: P-value < 0.05 → there IS a difference. P-value > 0.05 → there is NO difference."},
+  {type:"h4", text:"Hypothesis test selection table (high-value, memorize)"},
+  {type:"table", headers:["Data type","Test","Compares","Deck's case example"], rows:[
+    ["Continuous","2-Sample T-Test","Averages across two groups","Compare 21-year average TV sales across Europe/Asia"],
+    ["Continuous","ANOVA Test","Averages across three groups","Compare 21-year average TV sales across Europe/Asia/Latin America"],
+    ["Discrete","2-Proportion Test","Ratio across two groups","Compare process defect rates for a product between this year and last year"],
+    ["Discrete","Chi-Square Test","Ratio across three groups","Compare differences of defect types among A, B, C groups"],
+    ["Continuous","Correlation Analysis","Relationships between variables","Check how price relates to sales volume"]
+  ]},
+  {type:"p", text:"Simplified grid: 2 groups → T-Test (continuous) / 2-Proportion (discrete). 3+ groups → ANOVA (continuous) / Chi-Square (discrete)."},
+  {type:"h4", text:"Deck's worked cases"},
+  {type:"ul", items:[
+    "2-Sample T-Test: call-centre waiting time before improvement (avg 111.4, min 105, max 120) vs after (avg 108.4, min 101, max 118), 9 orders each, α = 5%.",
+    "ANOVA: three new product proposals surveyed among 1,000 customers in each of three age groups (20s avg 6.27 SD 0.52; 30s avg 4.28 SD 0.79; 40s avg 4.95 SD 0.81) → P-value less than 0.05, so the three groups differ.",
+    "2-Proportion Test: Line A 340 defects out of 1,000; Line B 170 out of 660. Sample defect rates 34% and 26% → P-value greater than 0.05, so there is no difference in line defect rate. (Good trap: the raw percentages differ but the test says no significant difference.)",
+    "Chi-Square: four classes of 50 surveyed each, dissatisfaction rates 0.11 / 0.16 / 0.04 / 0.14 → P-value greater than 0.05, so no difference in satisfaction rate."
+  ]},
+  {type:"h4", text:"Correlation coefficient (r)"},
+  {type:"ul", items:[
+    "A touchstone of the relationship between two variables; indicates how close the points are to a straight line",
+    "Always between −1 and 1; a value of −1 or 1 indicates a perfect linear relationship",
+    "Affected by anomalies/outliers",
+    "Significance still requires the p-value: if p > 0.05, there is no correlation no matter what r is"
+  ]},
+  {type:"p", text:"Point vs Interval estimation: Point estimation gives a single value (average height 174cm) and does not reflect error. Interval estimation gives a range with a probability (“the average height of all 17-year-old males exists between 160 and 188 with 95% probability”) and does reflect error."},
+  {type:"p", text:"Confidence interval inputs from the deck: n = 40, X̄ = 175, s = 20. Because the population standard deviation is unknown, the sample SD is used (valid with a sufficient number of observations, n ≥ 30). Z-score for 95% (0.95) = 1.96; typically 95% or 99% is used. CI = X̄ ± Z × (s/√n)."},
+  {type:"h", text:"PDA — Predictive Data Analysis"},
+  {type:"p", text:"Predict Y (result/outcome/objective/target variable) on the condition of X (factors/reason variables). Y = f(X)."},
+  {type:"p", text:"Deck's predictive case examples: mortgage fraud (gender, age, occupation, past use pattern, credit rating → 64% chance of fraud); equipment failure (equipment type, installation year, driving speed, temperature, humidity → 88% chance of failure after 3 days); customer churn (→ 75% chance); demand prediction (→ 70% chance of 10,000 units after 3 weeks); Target's pregnancy-stage product recommendation; automatic sorting of good vs defective products."},
+  {type:"p", text:"Machine Learning: a method of materializing AI (deep learning is one of several ML methods) that makes computers learn with data to create a predictive function Y = f(X). It reviews functions F1…Fn per the algorithm in a trial-and-error manner to find the function with the minimum error. Humans make the predictive function; the machine predicts the result instead of a human. Deck's train/test split example: 1,000,000 collected → 700,000 training data-set, 300,000 test data-set."},
+  {type:"h4", text:"Three types of machine learning"},
+  {type:"table", headers:["Type","Data","How it learns"], rows:[
+    ["Supervised Learning","Labeled data","Learning with both problems and answers"],
+    ["Unsupervised Learning","Unlabeled data","Learning through problems without answers"],
+    ["Reinforcement Learning","Learns without data","Learn by maximizing rewards and minimizing punishment"]
+  ]},
+  {type:"h4", text:"Five types of PDA"},
+  {type:"table", headers:["Type","Definition"], rows:[
+    ["Regression Analysis","Estimating the result variable values when given independent variable values — supervised learning using labeled data with continuous Y"],
+    ["Classification Analysis","Assigning a target object to one of the predetermined categories — supervised learning using labeled data with discrete Y"],
+    ["Cluster Analysis","Divide into useful groups to understand the structure of given data — unsupervised / self-learning using unlabeled data"],
+    ["Time Series Analysis","Analysis based on time series data; a rare/special case of regression analysis"],
+    ["Association Rule Analysis","Find a co-occurring event or activity; describe repeatable rules as probabilities"]
+  ]},
+  {type:"p", text:"Regression: used when Y is continuous. Algorithms listed: Simple Linear Regression, Multiple Linear Regression, Regularized Linear Regression, Generalized Additive Models, Regression Tree, Principal Component Regression, Partial Least Square, polynomial regression, step/basis function, regression splines, smoothing splines, Local Regression. Test R² is most commonly used for model performance evaluation. If all models have the same Test R², Simple is Best. Deck's R example uses lm(): Behavior Change = 0.9769 + 0.5815 × Systemic Pressure; since the P-value is less than 0.05, systemic pressure affects behavior change."},
+  {type:"p", text:"Classification / KNN (K-Nearest Neighborhood): after calculating the Euclidean distance between all data points, select k in order of nearest, and select the classification category by majority vote. Procedure: ① calculate distance from the new item to existing defined items (similarity scales) ② determine the K value (define decision rules) ③ classify by the most common class within K."},
+  {type:"p", text:"Cluster Analysis: divide observation objects into groups based on similarity/affinity — ensuring homogeneity within groups and heterogeneity between groups. Most representative application is customer segmentation. Purposes: ① identify hidden patterns → explore/summarize the entire data structure ② means of preprocessing — data reduction, outlier detection."},
+  {type:"p", text:"Time Series Analysis: analyzing causal relationships between variables related to time series data; a special form of regression. Series data = data observed in order of time (year, quarter, month, day, hour). Purposes: identify characteristics of time series data (period, seasonality, trend), and future prediction (company demand forecasting, economic indicators, infrastructure demand)."},
+  {type:"h4", text:"Four components of time series"},
+  {type:"table", headers:["Component","Definition"], rows:[
+    ["Trend","Long-term fluctuations due to changes in population, resources, and technology"],
+    ["Seasonal","Changes repeated in cycles of 12 months"],
+    ["Cycle","Irregular/repetitive changes such as expansion and contraction of economic activity"],
+    ["Irregular","Unknown changes not due to certain rules"]
+  ]},
+  {type:"p", text:"Association Rule: the “Shopping Cart Rule.” Finds the 『If-Then』 pattern of condition and result in huge quantities of data. Netflix's content recommendation is the best example. Classic examples: if shoppers buy bread they buy milk; if shoppers buy diapers they buy beer. Traditional form: “If you buy A, you will also buy B with 30% chance.” Sequence Analysis is the case where a time difference occurs in If-Then. Two algorithms most used for recommendation: Collaborative Filtering (both read → similar → recommend) and Content-based Filtering (man reads → similar content → recommended). Caution: some associations are meaningless or accidental — e.g. Buy(x, bread & butter) ⇒ Buy(x, milk) [90%] is a no-brainer."},
+  {type:"p", text:"PDA summary — two functions: ① Description — explain why the result comes out, and the extent of the effect on the outcome by cause. ② Presumption — identify the possibility of an unknown outcome, predict uncertain future facts in advance."},
+  {type:"p", text:"Three basic principles of model development: ① Best Fitting ② Principles of Economics (simplicity/parsimony) ③ Practically Reasonable. Forecasting accuracy is not the only criterion for judgment — judgment should be with practical usefulness."}
+]},
+{n:4, title:"TV Device Data", complexity:"Easy", blocks:[
+  {type:"p", text:"Definition: TV Device Data is all behavioral information data used by users via Smart TVs."},
+  {type:"h", text:"Seven log/data types"},
+  {type:"table", headers:["Log type","Generated when","Notable fields"], rows:[
+    ["Activation Log","User accesses a server for the first time to use their Smart TV — the starting point for data collection","Device Identification, TV Platform, TV Model, Service Country Registration, Start Date of Activation"],
+    ["App Installation Log","Customer installs or updates an app","App ID, date/time of installation, date/time of update"],
+    ["App Use History Log","Customer uses apps","Start time of app use, finish time of app use"],
+    ["TV Watching Log","Watching broadcast via antenna / set-top box / LG Channel","Channel Code, start/finish time, Media Type (RF/STB/IP), Channel, Program, Program Genre, Cast, Schedule"],
+    ["TV Normal Log","Saving all user actions from smart functions, services, apps","Header (SW version, language setting code, terms and conditions) + Data (CONTEXT NAME, MESSAGE ID, Message Data as JSON key:value, Log Time)"],
+    ["TV Search Log","Search words in the integrated search app","service, query, domain (search category: TV Show, LiveTV, Movie, YouTube), log time"],
+    ["TV VOD Selection Log","Selecting VOD within our service app recommendation/search results","Contents ID, CP App ID, Contents, Cast"]
+  ]},
+  {type:"p", text:"Common to nearly all logs: Device Identification (encrypted), TV Platform (chipset/platform code, e.g. W21O, O20N), TV Model (e.g. OLED65ABCDE), Service Country Registration (2-digit country code, e.g. KR)."},
+  {type:"p", text:"Notes: Activation start date is when the server was linked, which differs from the actual TV purchase date. Live EPG metadata is created on the server by linking channel code with EPG metadata — it is not received from the TV — and is currently serviced for 14 countries. Content usage information in CP apps such as Netflix and YouTube is NOT collected. Normal Log spec history is managed in Jira and saved as an Excel file; context name and message id are controlled through whitelist management."},
+  {type:"p", text:"Platforms: T-LAMP = TV Log Analytics Management Platform (device identification, webOS3.0~). Intellytics = device non-identification, all platforms. SDP = Service Delivery Platform."},
+  {type:"h", text:"Collection policy — three review gates"},
+  {type:"ol", items:[
+    "Legal Review (criteria for collection) — only collect logs for use and provide benefit to the customer; collect based on the customer's agreement level with consent; delete collected logs when consent expires",
+    "Privacy Compliance (safe collection) — personal identification info must be transmitted in a secured section, never in plain text",
+    "CP Contract Review (data collection item) — metadata supplied from CP collected per contract criteria"
+  ]},
+  {type:"p", text:"Consent tiers: Basic Terms consent → Activation Log, App Installation Log, Search Log, UCM Log. Watching Information consent → Broadcast Watching Log, VOD Selection Log (minimum 5 minutes of use), Normal Log (including whitelist). Voice Service consent → Voice Search Log."},
+  {type:"p", text:"Maintenance/storage policy: store only necessary items for the necessary period; saving periods set per purpose (CS, personalization). Only authorized users on authorized servers may access; data including personal information provided only for special purposes such as CS. Flow: saving for 1 month (single unit of data → DB) → saving for 2 years (CSV/TSV into T-LAMP; CSV file into Intellytics; GZ file into SDP)."},
+  {type:"h", text:"Destruction policy — three triggers"},
+  {type:"ol", items:[
+    "Automatic deletion at expiration of the saving period",
+    "Deletion according to user's request per each country's personal information protection policy (GDPR, CCPA)",
+    "Deletion on cancelling/unsubscribing — withdrawal of terms and conditions, data initialization in the TV menu"
+  ]},
+  {type:"h", text:"Provision policy"},
+  {type:"table", headers:["Purpose","Contents","Format","Platform"], rows:[
+    ["CS","Detailed data on failure-occurred services","CSV","—"],
+    ["GDPR/CCPA","Data for requesting a user's full usage range","Excel","T-LAMP"],
+    ["Service Improvement","Data for improvement of TV product quality","CSV","—"],
+    ["Index Analysis / Statistical Data / Serviceability","Per-smart-function analysis, statistics per country/platform, normal log service data","Dashboard","Intellytics"]
+  ]},
+  {type:"p", text:"How to request: T-LAMP — request through Jira or EP. Intellytics — request an account or access authority for dashboard access."}
+]},
+{n:5, title:"The Use of HE Data", complexity:"Medium", blocks:[
+  {type:"p", text:"LGE data management flow: Collect/Secure → Integrate/Store → Analyze/Utilize."},
+  {type:"ul", items:[
+    "Categories: Customer Data (collected under customer's consent — device/app data, member management platform, internal system data) and Enterprise/Operability Data (R&D, procurement, production, quality, SCM, distribution, finance, sales, marketing, facility/inspection, process/device log)",
+    "Storage: DDL (Device Data Lake) and EDL (Enterprise Data Lake), virtually integrated via Data Virtualization in the Data Portal",
+    "Analysis/Utilize: Intellytics, T-LAMP, DAVID, HEDP (HE Data Platform); analysis platforms include Excel (individual download/local analysis), MSTR and Tableau (self-service BI), R and Python (AI/ML sandbox)",
+    "Governed by DLMS (Data Life Cycle Management System) under Customer Data Governance"
+  ]},
+  {type:"p", text:"Roughly 40 data systems (excluding duplicates) are active in HE, with 15 customer data systems (identified/anonymized)."},
+  {type:"h", text:"Main data used by team"},
+  {type:"table", headers:["Team","Mainly used data","Data/system"], rows:[
+    ["CX","Customer VoC, TV Use Data","Buzz Matrix, T-LAMP, Intellytics"],
+    ["Platform Business","TV Watching Data","Intellytics, T-LAMP, Harmony System"],
+    ["R&D","TV Watching Data","T-LAMP, Intellytics, AdTS, CDP, Harmony System"],
+    ["Sales/Marketing","TV Recognize/Search/Purchase Data, Customer VoC, Customer Trend","GMP, CDP, T-LAMP, OBS, EMP, Intellytics (VOC/CMR)"],
+    ["CS / Quality","Purchased Customer VoC (PainPoint), Customer Profile","CPPM, EMP, New CRM"]
+  ]},
+  {type:"p", text:"HE Data Platform Task Service — provides safe data on preferred time to HE members, via Jira (HEDATAPLFM project). Three service types: ① provide safe data to all members ② support extract/process works ③ data consulting (e.g. security and cost perspective checks, legal review and terms-revision process)."},
+  {type:"p", text:"Use cases: StandbyMe Go UXP analysis (three Unique eXperience Points: high portability, screen for further experience, flexible use according to contents) built into a DAVID dashboard; LG Channel Home App 3.0 with personalized recommendation using LG Channel data, ACR data, and US CDP customer data; Hawkeye 2.0 (PainKiller) — a customer feedback pipeline that detects customer pain points before customers report them, plus Prosense (proactive sense for failure) automatic log collection and a Beta Program."}
+]},
+{n:6, title:"HE Company's DEJ", complexity:"High", blocks:[
+  {type:"p", text:"DEJ = Development Experience Journey (the R&D-side counterpart to CEJ = Customer Experience Journey)."},
+  {type:"p", text:"Why DEJ: changes in the way of work are required for HE members who develop/supply products aligned with the C-D-P system. Drivers: TV usability changing from Watching to Using; the era of customer experience (77% responded that product service experience affects brand image); microsegmentation of customer groups; expansion from product sales to subscription/service-oriented platform business."},
+  {type:"p", text:"What DEJ is: how HE Company works to materialize “All / Smart / Agile / Perfect” products and services with differentiated platforms and innovative processes, by building a customer-centered development environment and changing the way they work for customer experience innovation."},
+  {type:"h", text:"DEJ 3333 (memorize)"},
+  {type:"table", headers:["Goal","Target"], rows:[
+    ["3!","Check customer's Pain Point / Requirement in 3 hours"],
+    ["3!!","Response in 3 days for Customer Experience Value/Improvement"],
+    ["3!!!","Explore at least 3 distinguished Customer Experience Values every year"],
+    ["3!!!!","30% increase in member's satisfaction (work efficiency)"]
+  ]},
+  {type:"p", text:"DEJ platform three phases: Explore Customer Experience Value → Materialize Customer Experience Value → Provide Customer Value / Monitoring."},
+  {type:"h", text:"Roadmap"},
+  {type:"table", headers:["Phase","Period","Focus"], rows:[
+    ["DEJ 1.0","2018–2023","Expand serve platform & connect to data; strengthen data connectivity between platforms"],
+    ["DEJ 2.0","2024–2025","Integrate/advance DEJ Platform; advance customer data value"],
+    ["DEJ 3.0","2026~","Customized solution for customer; AI intellectualization platform connected to all business sectors"]
+  ]},
+  {type:"p", text:"Vision: “Sync to You, Open to All.” Three-part experience ladder: Connect Me (common experience value) → Recognize Me (provide experience value more than expectation) → Fit in with Me (WoW!! provide experience value)."},
+  {type:"p", text:"Systems named in the deck: HE DP (HE Data Platform), IC360 (customer understanding platform in LGE), Hawkeye (detect customer pain point in advance), HE-WIDH (webOS Integrated Data House) with DAVID (usability) and LGCAP (analyze ad service), HE-QDX (analyze integrated quality), HEAVEN (integrated development of circuit/power/picture quality/sound quality), HERMES (integrated development of mechanic/LCM/package), HE-VPDS (HW virtual verification), HEY!TAS (SW virtual verification), RMS/IMS (requirement/initiative management), NPDM + BOM Automization, PINE (webOS platform upgrade), MLOps, DEJ Portal, HE-DEJ Datalake, Beta Program."},
+  {type:"p", text:"5 Main Customer Experiences (3C 2S): Connectivity, Care, Customization, Servitization, Sustainability. ⚠️ The user's compiled notes list “Core” as the second C — that is wrong. The deck says Care. Corrected here and flagged in the Check tab."},
+  {type:"p", text:"Provide Customer Value pillars: Personalization (tailored recommendation service, ad, picture/sound quality settings, settings for disabled/seniors), Optimization (SW upgrade on right time via PINE), Specialization (develop new use experience products, e.g. StandbyMe Go)."}
+]}
+];
+
+
+const CARDS = {
+  sequences: [
+    {f:"Three stages of digital change", b:"Digitization (Data) → Digitalization (Process) → Digital Transformation (Business)"},
+    {f:"Journey for Cultural Consensus", b:"Recognize → Understand → Accept → Participate"},
+    {f:"Data-Driven Decision Making stages", b:"Descriptive (what happened?) → Diagnostic (why?) → Predictive (what will happen?) → Prescriptive (what should I do?)"},
+    {f:"Four analysis methods (Module 3)", b:"DDA → EDA → CDA → PDA (Descriptive → Exploratory → Confirmatory → Predictive)"},
+    {f:"CEJ — Customer Experience Journey (9 stages)", b:"Aware → Explore → Decide → Purchase → Deliver → On-board → Use → Maintain → Replace"},
+    {f:"5-stage data analysis process (CRISP-DM based)", b:"Define the Issue → Collect/Extract Data → Preprocess Data → Visualize and Analyze → Draw and Apply Insight"},
+    {f:"DEJ roadmap phases", b:"DEJ 1.0 (2018–2023) → DEJ 2.0 (2024–2025) → DEJ 3.0 (2026~)"},
+    {f:"DEJ experience ladder", b:"Connect Me → Recognize Me → Fit in with Me"}
+  ],
+  formulas: [
+    {f:"Mean (Arithmetic Average)", b:"X̄ = (1/n)Σxᵢ — sum of observed data ÷ number of observations. Significantly influenced by outliers."},
+    {f:"Median position", b:"(N+1)/2-th value when sorted ascending. N odd → single middle value. N even → average the two middle values. Not significantly influenced by outliers."},
+    {f:"Sum of Squares", b:"Σ(individual value − average)². Example: [1,2,2,2,3], mean 2 → (1−2)²+(2−2)²+(2−2)²+(2−2)²+(3−2)² = 2"},
+    {f:"Variance s²", b:"Sum of Squares ÷ (n − 1). Example: 2 ÷ (5−1) = 0.5. Unit is the square of the original unit."},
+    {f:"Standard deviation s", b:"s = √(s²). Example: √0.5"},
+    {f:"Range R", b:"Maximum − Minimum. Larger range = greater variability. Affected by outliers."},
+    {f:"IQR (Interquartile Range)", b:"Q3 − Q1 — the body length of the box plot. NOT affected by outliers."},
+    {f:"Box plot outlier fence", b:"1.5 × IQR beyond the box = mild outlier fence. Further out = extreme outliers."},
+    {f:"Quartile positions", b:"Q1 = X₍₍ₙ₊₁₎/₄₎ · Q2 (median) = X₍₂₍ₙ₊₁₎/₄₎ · Q3 = X₍₃₍ₙ₊₁₎/₄₎"},
+    {f:"Confidence Interval", b:"CI = X̄ ± Z × (s/√n). Deck example: n=40, X̄=175, s=20. Sample SD substitutes for population SD when n ≥ 30."},
+    {f:"Z-score for 95% confidence", b:"Z₉₅ = 1.96 (typically 95% or 99% used)"},
+    {f:"Correlation coefficient r", b:"Always between −1 and 1. ±1 = perfect linear relationship. Affected by outliers. If p > 0.05, there is no correlation no matter what r is."},
+    {f:"Simple linear regression example (deck's lm())", b:"Behavior Change = 0.9769 + 0.5815 × Systemic Pressure. P-value < 0.05 → Systemic Pressure affects Behavior Change."},
+    {f:"Y = f(X)", b:"Y = Dependent/Response/Outcome variable. X = Independent/Explanatory/Predictor variable. In Y = 2X + 3: 2 = coefficient, 3 = constant."}
+  ],
+  hypothesis: [
+    {f:"2-Sample T-Test", b:"Continuous data · compares averages across TWO groups. Deck example: call-centre wait time before (avg 111.4) vs after (avg 108.4) improvement, 9 orders each, α=5%."},
+    {f:"ANOVA Test", b:"Continuous data · compares averages across THREE groups. Deck example: 3 product proposals across 20s/30s/40s age groups → P < 0.05, groups differ."},
+    {f:"2-Proportion Test", b:"Discrete data · compares a ratio across TWO groups. Deck example: Line A 34% defects vs Line B 26% — P > 0.05 → NO significant difference despite different raw %."},
+    {f:"Chi-Square Test", b:"Discrete data · compares a ratio across THREE groups. Deck example: 4 classes' dissatisfaction rates (0.11/0.16/0.04/0.14) → P > 0.05 → no difference."},
+    {f:"Correlation Analysis", b:"Continuous data · relationships between variables. Deck example: how price relates to sales volume."},
+    {f:"CDA four-step process", b:"① Set up hypothesis (H0 = no difference, H1 = difference) ② Determine α (normally 5%) ③ Calculate P-value ④ Decide: P > α → choose H0; P ≤ α → choose H1"},
+    {f:"P-value shorthand", b:"P-value < 0.05 → there IS a difference. P-value > 0.05 → there is NO difference."},
+    {f:"Selection grid", b:"2 groups: T-Test (continuous) / 2-Proportion (discrete). 3+ groups: ANOVA (continuous) / Chi-Square (discrete)."}
+  ],
+  quality: [
+    {f:"Validity", b:"Must contain the information you want to know; data items must sufficiently reflect the concept (Concept = Σ data items)"},
+    {f:"Timeliness", b:"Data should be obtainable when needed; excessive delay is not ideal"},
+    {f:"Consistency", b:"Meaning and criteria of the data are consistent regardless of time and space; criteria, unit, measurement method must be the same"},
+    {f:"Representativeness", b:"The collected sample should represent the population. Literary Digest (1936, biased affluent sample) failed; Gallup (stratified, 1,500) succeeded. Bias beats size."},
+    {f:"Accuracy", b:"Data should be close to the true values. (Contrast with Precision — commonly confused.)"},
+    {f:"Precision", b:"Regardless of who measures or collects, and no matter how many repetitions, the values should be the same. (Contrast with Accuracy.)"},
+    {f:"Completeness", b:"The range of data is appropriate and there are no missing values or outliers"},
+    {f:"Sufficiency", b:"A sufficient amount of data is ensured. As data size increases, sampling error decreases while non-sampling error increases."}
+  ],
+  glossary: [
+    {f:"Digitization", b:"Conversion of Analogue to Digital — the Data layer of digital change."},
+    {f:"Digitalization", b:"Adaption — digitizing a process — the Process layer of digital change."},
+    {f:"Digital Transformation (DX)", b:"Creation — business innovation using digital technology — the Business layer."},
+    {f:"Citizen Data Scientist", b:"A field worker with domain expertise plus data/AI capability: propose task, simple analysis, collaborate with specialists, lead tasks."},
+    {f:"C-D-P", b:"CX–DX–Performance operating system (note the dash — different from CDP = Career Development Path or Customer Data Platform)."},
+    {f:"CEJ", b:"Customer Experience Journey — 9 stages: Aware→Explore→Decide→Purchase→Deliver→On-board→Use→Maintain→Replace."},
+    {f:"DEJ", b:"Development Experience Journey — the R&D-side counterpart to CEJ."},
+    {f:"NPS", b:"Net Promoter Score = % promoters − % detractors; measures customer loyalty."},
+    {f:"CXR", b:"Customer eXperience Rating = % satisfaction − % dissatisfaction."},
+    {f:"ARPU", b:"Average Revenue Per User = total revenue ÷ number of subscribers."},
+    {f:"MAU", b:"Monthly Activity User — customers who interacted within a month."},
+    {f:"A.R.E Index", b:"Acquisition, Retention, Engagement — loyalty by stage."},
+    {f:"Data Lake", b:"A repository for raw data types in LGE."},
+    {f:"Intellytics", b:"LGE in-house integrated analytics system for AI and big data; device non-identification, all platforms."},
+    {f:"CPPM", b:"Customer Pain Point Management — cross-channel pain point analysis platform."},
+    {f:"T-LAMP", b:"TV Log Analytics Management Platform — device-identification data, webOS 3.0 and up."},
+    {f:"SDP", b:"Service Delivery Platform."},
+    {f:"DDL / EDL", b:"Device Data Lake / Enterprise Data Lake — virtually integrated via Data Virtualization in the Data Portal."},
+    {f:"DLMS", b:"Data Life Cycle Management System — governs data under Customer Data Governance."},
+    {f:"HEDP", b:"HE Data Platform."},
+    {f:"IC360", b:"Customer understanding platform in LGE."},
+    {f:"Hawkeye 2.0 (PainKiller)", b:"Detects customer pain points before customers report them; paired with Prosense (proactive failure sensing) and a Beta Program."},
+    {f:"CRISP-DM", b:"Cross Industry Standard Process for Data Mining. 6 steps: Understand Task → Understand Data → Prepare Data → Modelling → Evaluate → Develop."},
+    {f:"KNN (K-Nearest Neighborhood)", b:"Classification algorithm: calculate Euclidean distance to all points, take K nearest, classify by majority vote."},
+    {f:"3C2S", b:"5 Key/Main Customer Experiences: Connectivity, Care, Customization, Servitization, Sustainability."},
+    {f:"F.U.N", b:"CX Core Values: First (No.1 experience), Unique (differentiated), New (never-before)."},
+    {f:"Q.C.D", b:"CX Basic Values: Quality, Cost, Delivery."},
+    {f:"DEJ 3333", b:"3 hours to check pain point/requirement; 3 days to respond; 3 distinguished CX values per year; 30% satisfaction increase."}
+  ],
+  subjective: [
+    {f:"What term describes the total experience and emotions a customer undergoes throughout the CEJ?", b:"CX (Customer Experience) — the perceptions and emotions experienced by customers while encountering our products/services throughout the customer experience journey."},
+    {f:"What is the correct sequence of the Journey toward Cultural Consensus?", b:"Recognize → Understand → Accept → Participate. Recognize the changes; understand the direction of changes; accept the method of changes; participate in the execution of changes."},
+    {f:"Which hypothesis test compares 2 groups for continuous data?", b:"2-Sample T-Test. (Continuous + 3 groups → ANOVA. Discrete + 2 groups → 2-Proportion Test. Discrete + 3 groups → Chi-Square Test.)"},
+    {f:"Arrange the data analysis methods in correct sequence: DDA, PDA, EDA, CDA.", b:"DDA → EDA → CDA → PDA (Descriptive → Exploratory → Confirmatory → Predictive). DDA summarizes the current state; EDA discovers patterns/hypotheses via graphs; CDA tests hypotheses for decision-making; PDA predicts using the verified relationship."},
+    {f:"Fill the blanks: Digitalization of (___) — Digitization of (___) — (___) innovation.", b:"Information — Process — Business."},
+    {f:"Why do most digital transformation efforts fail?", b:"Companies focus solely on introducing technology and overlook the actual subject of execution: people. Success is only 4–11% in traditional industries and below 26% even in digital industries (5% in 2017, 8% in 2019). Contributing causes: lack of cultural consensus across all members; transformation driven by consultants rather than by field workers; insufficient Domain DX capability; weak workforce development. The fix is Domain DX capability — cultural consensus through everyone's participation, field workers becoming Citizen Data Scientists, and DX tasks led by the field."},
+    {f:"What is a Citizen Data Scientist and why is one needed?", b:"A field worker who combines domain expertise with data/AI capability, able to ① propose a task ② do simple analysis ③ collaborate with a specialized data scientist ④ lead a task. Needed because the big data analysis market grows nearly 30% annually while the supply of professional data scientists is insufficient; augmented analysis now lets anyone access Big Data/AI; and Big Data/AI capability is becoming a basic capability rather than a specialism."},
+    {f:"What is the role of a DX Facilitator?", b:"Find the task's KPI; transform practical issues into data issues; autonomously execute DX duties — bridging field operations and data analysis."},
+    {f:"Explain the difference between Predictive and Corrective work styles.", b:"Corrective is reactive: fix problems after they arise and prevent recurrence, using PDCA and DMAIC. Preventive removes the cause of the issue in advance using FMEA and DRBFM. Predictive anticipates and responds to issues before they occur using Big Data and AI."},
+    {f:"What are the three roles of DX within the C-D-P system?", b:"Trigger (better understand customers and identify insights using data), Accelerator (provide solutions for CX implementation using digital technology), Tracker (monitor CX delivery using data)."}
+  ]
+};
+
+
+const CHEAT_BLOCKS = [
+  {type:"h", text:"The five sequences"},
+  {type:"ol", items:[
+    "Digitization → Digitalization → Digital Transformation (Data → Process → Business)",
+    "Recognize → Understand → Accept → Participate (cultural consensus)",
+    "Descriptive → Diagnostic → Predictive → Prescriptive (DDDM)",
+    "DDA → EDA → CDA → PDA (analysis methods)",
+    "Aware → Explore → Decide → Purchase → Deliver → On-board → Use → Maintain → Replace (CEJ, 9 stages)",
+    "Define the Issue → Collect/Extract → Preprocess → Visualize/Analyze → Draw and Apply Insight (5-stage process)"
+  ]},
+  {type:"h", text:"Hypothesis test grid"},
+  {type:"table", headers:["","Continuous","Discrete"], rows:[
+    ["2 groups","2-Sample T-Test","2-Proportion Test"],
+    ["3+ groups","ANOVA","Chi-Square Test"],
+    ["Relationship","Correlation Analysis","—"]
+  ]},
+  {type:"p", text:"Decision rule: P ≤ 0.05 → difference exists (H1). P > 0.05 → no difference (H0)."},
+  {type:"h", text:"Formulas"},
+  {type:"ul", items:[
+    "Mean X̄ = (1/n)Σxᵢ",
+    "Median position = (N+1)/2",
+    "Sum of Squares = Σ(xᵢ − X̄)²",
+    "Variance s² = SS ÷ (n − 1)",
+    "Standard deviation s = √s²",
+    "Range = Max − Min",
+    "IQR = Q3 − Q1; outlier fence = 1.5 × IQR",
+    "CI = X̄ ± Z(s/√n); Z₉₅ = 1.96; use sample SD when n ≥ 30",
+    "r ∈ [−1, 1]"
+  ]},
+  {type:"h", text:"Outlier sensitivity"},
+  {type:"table", headers:["Resistant","Sensitive"], rows:[
+    ["Median, IQR","Mean, Standard Deviation, Range"]
+  ]},
+  {type:"p", text:"Eight data quality criteria: Validity · Timeliness · Consistency · Representativeness · Accuracy · Precision · Completeness · Sufficiency"},
+  {type:"p", text:"Four sampling methods: Simple Random · Stratified Random · Systematic · Cluster"},
+  {type:"p", text:"Data types: Nominal / Ordinal (discrete) · Interval / Ratio (continuous)"},
+  {type:"p", text:"5 PDA types: Regression (supervised, continuous Y) · Classification (supervised, discrete Y) · Cluster (unsupervised) · Time Series · Association Rule"},
+  {type:"p", text:"3 ML types: Supervised (labeled) · Unsupervised (unlabeled) · Reinforcement (reward/punishment)"},
+  {type:"p", text:"Time series components: Trend · Seasonal · Cycle · Irregular"},
+  {type:"p", text:"F.U.N = First, Unique, New · Q.C.D = Quality, Cost, Delivery · 3C2S = Connectivity, Care, Customization, Servitization, Sustainability"},
+  {type:"p", text:"DX in C-D-P: Trigger · Accelerator · Tracker"},
+  {type:"p", text:"HE's 3 DX axes: DX for Customer · DX for Company · Business Model Innovation (NOT Process Innovation)"},
+  {type:"p", text:"Citizen Data Scientist's 4: Propose Task · Simple Analysis · Collaboration with Specialized Data Scientist · Leading Task (NOT recruiting talent)"},
+  {type:"p", text:"Work styles: Corrective (PDCA/DMAIC) · Preventive (FMEA/DRBFM) · Predictive (Big Data/AI)"},
+  {type:"h", text:"Key numbers"},
+  {type:"p", text:"4–11% traditional DX success · <26% digital · 5% (2017) → 8% (2019) · ~30% big data market growth · Starbucks Wi-Fi 2008, Drive Thru 2012 · Nike 70M members, 50% D2C by '25 · 1.7PB T-LAMP · 14 EPG countries · 5 min watching threshold · 1 month → 2 year storage · DEJ 3333"},
+  {type:"h", text:"Glossary"},
+  {type:"p", text:"NPS = %promoters − %detractors · CXR = %satisfied − %dissatisfied · ARPU = revenue ÷ subscribers · MAU = monthly active users · A.R.E = Acquisition, Retention, Engagement"}
+];
+
+const CHECK_CLAIMS = [
+  {claim:"“5 V's of Big Data: Volume, Velocity, Variety, Veracity, Value” (marked IMPORTANT)", deck:"Deck names three V's (Gartner: Volume, Velocity, Variety) and separately lists “More V's… Variability, Visualization, Volatility.” Veracity and Value appear nowhere.", risk:"High"},
+  {claim:"DX definitions attributed to McKinsey / Microsoft / Salesforce / Adobe / World Economic Forum by name", deck:"The deck shows the same five definition blurbs with no company names attached. (Only the Big Data table names sources — Gartner, McKinsey, IDC, Wikipedia, NIA.)", risk:"Medium"},
+  {claim:"“AI first used at the 1956 Dartmouth Conference”; “Alan Turing's Turing Machine”", deck:"Not present anywhere in the deck.", risk:"Medium"},
+  {claim:"“204 Million LG Smart TVs sold globally,” “500 servers, 2,100 CPU cores,” “30 systems”", deck:"Not present. The deck does state 1.7PB for T-LAMP and ~2,157TB internal / 2,415TB enterprise data — those check out; the other figures do not.", risk:"Medium"},
+  {claim:"HEY!TAS automation targets: 2023 ~50%, 2024 80%, 2025 100%", deck:"Not present in the deck.", risk:"Low–Medium"},
+  {claim:"3C2S listed as “Connectivity, Core, Customization, Servitization, Sustainability”", deck:"The deck says Care, not Core. This one is an outright error — correct it.", risk:"High"}
+];
+
+
+/* ===================== helpers ===================== */
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, function(c){
+    return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];
+  });
+}
+function textMatches(text, term){
+  return !term || String(text).toLowerCase().indexOf(term.toLowerCase()) !== -1;
+}
+function hl(text, term){
+  var esc = escapeHtml(text);
+  if(!term) return esc;
+  try{
+    var safe = term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    var re = new RegExp("(" + safe + ")", "ig");
+    return esc.replace(re, "<mark>$1</mark>");
+  }catch(e){ return esc; }
+}
+function shuffleArr(arr){
+  var a = arr.slice();
+  for(var i = a.length - 1; i > 0; i--){
+    var j = Math.floor(Math.random() * (i + 1));
+    var t = a[i]; a[i] = a[j]; a[j] = t;
+  }
+  return a;
+}
+
+/* generic block renderer, shared by Study + Cheat tabs */
+function renderBlocks(blocks, term){
+  var html = "";
+  var anyMatch = !term;
+  var pending = "";
+  function flush(){ if(pending){ html += pending; pending = ""; } }
+  for(var i = 0; i < blocks.length; i++){
+    var b = blocks[i];
+    if(b.type === "h"){ pending += '<h3 class="block-h">' + hl(b.text, term) + "</h3>"; continue; }
+    if(b.type === "h4"){ pending += '<h4 class="block-h4">' + hl(b.text, term) + "</h4>"; continue; }
+    if(b.type === "p"){
+      if(term && !textMatches(b.text, term)) continue;
+      flush();
+      if(term) anyMatch = true;
+      html += "<p>" + hl(b.text, term) + "</p>";
+      continue;
+    }
+    if(b.type === "ul" || b.type === "ol"){
+      var items = b.items.filter(function(it){ return !term || textMatches(it, term); });
+      if(term && items.length === 0) continue;
+      flush();
+      if(term && items.length) anyMatch = true;
+      var tag = b.type === "ul" ? "ul" : "ol";
+      html += "<" + tag + ">" + items.map(function(it){ return "<li>" + hl(it, term) + "</li>"; }).join("") + "</" + tag + ">";
+      continue;
+    }
+    if(b.type === "table"){
+      var rows = b.rows.filter(function(r){ return !term || r.some(function(c){ return textMatches(c, term); }); });
+      if(term && rows.length === 0) continue;
+      flush();
+      if(term && rows.length) anyMatch = true;
+      html += '<div class="table-wrap"><table><thead><tr>' +
+        b.headers.map(function(h){ return "<th>" + escapeHtml(h) + "</th>"; }).join("") +
+        "</tr></thead><tbody>" +
+        rows.map(function(r){ return "<tr>" + r.map(function(c){ return "<td>" + hl(c, term) + "</td>"; }).join("") + "</tr>"; }).join("") +
+        "</tbody></table></div>";
+      continue;
+    }
+  }
+  return { html: html, anyMatch: anyMatch };
+}
+
+/* ===================== app state ===================== */
+var state = {
+  tab: "drill",
+  searchTerm: "",
+  drill: {
+    moduleFilter: "all",
+    shuffle: false,
+    order: [],
+    index: 0,
+    answers: {},
+    flagged: {}
+  },
+  study: {
+    open: { 1: true }
+  },
+  cards: {
+    deck: "sequences",
+    index: 0,
+    flipped: false
+  }
+};
+
+var CARD_DECKS = [
+  ["sequences", "Sequences"],
+  ["formulas", "Formulas"],
+  ["hypothesis", "Hypothesis tests"],
+  ["quality", "Quality criteria"],
+  ["glossary", "Glossary"],
+  ["subjective", "Subjective answers"]
+];
+
+/* ===================== score / pass-line ===================== */
+function computeScore(){
+  var ids = state.drill.order;
+  var answered = 0, correct = 0;
+  for(var i = 0; i < ids.length; i++){
+    var a = state.drill.answers[ids[i]];
+    if(a){ answered++; if(a.correct) correct++; }
+  }
+  return { answered: answered, correct: correct, pct: answered ? Math.round((correct / answered) * 100) : 0 };
+}
+function updateScoreStrip(){
+  var s = computeScore();
+  document.getElementById("scorePct").textContent = s.pct + "%";
+  document.getElementById("scoreFrac").textContent = s.correct + "/" + s.answered;
+  var fill = document.getElementById("passFill");
+  fill.style.width = Math.min(s.pct, 100) + "%";
+  fill.classList.toggle("pass", s.pct >= 80);
+}
+
+/* ===================== tabs ===================== */
+function onTabSwitch(tab){
+  state.tab = tab;
+  document.querySelectorAll(".tab-btn").forEach(function(btn){
+    btn.setAttribute("aria-selected", btn.dataset.tab === tab ? "true" : "false");
+  });
+  document.querySelectorAll(".tab-panel").forEach(function(p){ p.classList.remove("active"); });
+  document.getElementById("tab-" + tab).classList.add("active");
+  if(tab === "drill") renderDrill();
+  if(tab === "study") renderStudy();
+  if(tab === "cards") renderCards();
+  if(tab === "cheat") renderCheat();
+  if(tab === "check") renderCheck();
+}
+
+/* ===================== DRILL ===================== */
+function buildDrillSet(subsetIds){
+  var pool;
+  if(subsetIds){
+    pool = subsetIds.slice();
+  } else if(state.drill.moduleFilter === "all"){
+    pool = QUESTIONS.map(function(q){ return q.id; });
+  } else {
+    var m = state.drill.moduleFilter;
+    pool = QUESTIONS.filter(function(q){ return q.m === m; }).map(function(q){ return q.id; });
+  }
+  if(state.drill.shuffle) pool = shuffleArr(pool);
+  state.drill.order = pool;
+  state.drill.index = 0;
+  state.drill.answers = {};
+}
+function onDrillFilter(mod){
+  state.drill.moduleFilter = mod === "all" ? "all" : Number(mod);
+  buildDrillSet();
+  renderDrill();
+}
+function onDrillShuffleToggle(){
+  state.drill.shuffle = !state.drill.shuffle;
+  buildDrillSet();
+  renderDrill();
+}
+function onDrillReset(){
+  state.drill.flagged = {};
+  buildDrillSet();
+  renderDrill();
+}
+function onDrillOption(qid, idx){
+  if(state.drill.answers[qid]) return;
+  var q = QUESTIONS.filter(function(x){ return x.id === qid; })[0];
+  state.drill.answers[qid] = { chosen: idx, correct: idx === q.a };
+  renderDrill();
+}
+function onDrillNext(){
+  state.drill.index++;
+  renderDrill();
+}
+function onDrillFlag(qid){
+  state.drill.flagged[qid] = !state.drill.flagged[qid];
+  renderDrill();
+}
+function onDrillRetry(mode){
+  var ids;
+  if(mode === "wrong"){
+    ids = state.drill.order.filter(function(id){
+      var a = state.drill.answers[id];
+      return a && !a.correct;
+    });
+  } else {
+    ids = state.drill.order.filter(function(id){ return state.drill.flagged[id]; });
+  }
+  if(ids.length === 0) return;
+  if(state.drill.shuffle) ids = shuffleArr(ids);
+  buildDrillSet(ids);
+  renderDrill();
+}
+
+function moduleTag(m){ return "M" + m; }
+
+function renderDrill(){
+  var el = document.getElementById("tab-drill");
+  var chips = ["all", 1, 2, 3, 4, 5, 6].map(function(m){
+    var label = m === "all" ? "All" : moduleTag(m);
+    var active = state.drill.moduleFilter === (m === "all" ? "all" : m);
+    return '<button class="chip' + (active ? " chip-active" : "") + '" onclick="onDrillFilter(\'' + m + '\')">' + label + "</button>";
+  }).join("");
+
+  var head = '<div class="panel drill-controls">' +
+    '<div class="chip-row">' + chips + "</div>" +
+    '<div class="drill-toggles">' +
+      '<button class="chip' + (state.drill.shuffle ? " chip-active" : "") + '" onclick="onDrillShuffleToggle()">Shuffle</button>' +
+      '<button class="chip chip-ghost" onclick="onDrillReset()">Reset</button>' +
+    "</div>" +
+  "</div>";
+
+  var body;
+  if(state.drill.order.length === 0){
+    body = '<div class="panel"><p class="muted">No questions match this filter.</p></div>';
+  } else if(state.drill.index >= state.drill.order.length){
+    body = renderDrillSummary();
+  } else {
+    body = renderDrillQuestion();
+  }
+  el.innerHTML = head + body;
+  updateScoreStrip();
+}
+
+function renderDrillQuestion(){
+  var qid = state.drill.order[state.drill.index];
+  var q = QUESTIONS.filter(function(x){ return x.id === qid; })[0];
+  var a = state.drill.answers[qid];
+  var flagged = !!state.drill.flagged[qid];
+
+  var srcBadge = "";
+  if(q.src === "deck") srcBadge = '<span class="badge badge-deck">DECK</span>';
+  if(q.src === "notes") srcBadge = '<span class="badge badge-notes">NOTES</span>';
+
+  var optsHtml = q.opts.map(function(opt, idx){
+    var cls = "option";
+    if(a){
+      if(idx === q.a) cls += " opt-correct";
+      else if(idx === a.chosen) cls += " opt-wrong";
+    }
+    var disabled = a ? " disabled" : "";
+    return '<button class="' + cls + '" ' + disabled + ' onclick="onDrillOption(\'' + qid + "', " + idx + ')">' +
+      '<span class="opt-letter mono">' + String.fromCharCode(65 + idx) + "</span>" +
+      '<span class="opt-text">' + escapeHtml(opt) + "</span>" +
+    "</button>";
+  }).join("");
+
+  var why = a ? '<div class="why-line">' + escapeHtml(q.why) + "</div>" : "";
+  var nextBtn = a ? '<button class="btn-primary" onclick="onDrillNext()">Next →</button>' : "";
+
+  return '<div class="panel drill-question">' +
+    '<div class="q-meta mono">' +
+      '<span>' + escapeHtml(qid) + " &middot; " + moduleTag(q.m) + "</span>" +
+      srcBadge +
+      '<button class="flag-btn' + (flagged ? " flag-active" : "") + '" onclick="onDrillFlag(\'' + qid + '\')" aria-pressed="' + flagged + '">' + (flagged ? "★ Flagged" : "☆ Flag for review") + "</button>" +
+    "</div>" +
+    '<p class="q-text">' + escapeHtml(q.q) + "</p>" +
+    '<div class="opt-list">' + optsHtml + "</div>" +
+    why +
+    '<div class="drill-progress mono muted">Question ' + (state.drill.index + 1) + " / " + state.drill.order.length + "</div>" +
+    '<div class="drill-actions">' + nextBtn + "</div>" +
+  "</div>";
+}
+
+function renderDrillSummary(){
+  var s = computeScore();
+  var byModule = {};
+  state.drill.order.forEach(function(id){
+    var q = QUESTIONS.filter(function(x){ return x.id === id; })[0];
+    var a = state.drill.answers[id];
+    if(!byModule[q.m]) byModule[q.m] = { correct: 0, total: 0 };
+    byModule[q.m].total++;
+    if(a && a.correct) byModule[q.m].correct++;
+  });
+  var weakest = null, weakestPct = 101;
+  Object.keys(byModule).forEach(function(m){
+    var d = byModule[m];
+    var pct = d.total ? (d.correct / d.total) * 100 : 100;
+    if(pct < weakestPct){ weakestPct = pct; weakest = m; }
+  });
+  var rows = Object.keys(byModule).sort().map(function(m){
+    var d = byModule[m];
+    var pct = d.total ? Math.round((d.correct / d.total) * 100) : 0;
+    var mark = (m === weakest) ? ' <span class="badge badge-high">WEAKEST</span>' : "";
+    return "<tr><td>" + moduleTag(m) + mark + "</td><td>" + d.correct + " / " + d.total + "</td><td>" + pct + "%</td></tr>";
+  }).join("");
+
+  var wrongCount = state.drill.order.filter(function(id){ var a = state.drill.answers[id]; return a && !a.correct; }).length;
+  var flaggedCount = state.drill.order.filter(function(id){ return state.drill.flagged[id]; }).length;
+
+  return '<div class="panel drill-summary">' +
+    '<h3 class="block-h">Set complete — ' + s.correct + " / " + s.answered + " (" + s.pct + "%)</h3>" +
+    '<p class="muted">Pass line is 80%. ' + (s.pct >= 80 ? "You cleared it on this set." : "Below pass line on this set — drill the weak module again.") + "</p>" +
+    '<div class="table-wrap"><table><thead><tr><th>Module</th><th>Score</th><th>%</th></tr></thead><tbody>' + rows + "</tbody></table></div>" +
+    '<div class="drill-actions">' +
+      '<button class="btn-primary" ' + (wrongCount ? "" : "disabled") + ' onclick="onDrillRetry(\'wrong\')">Retry wrong only (' + wrongCount + ")</button>" +
+      '<button class="btn-ghost" ' + (flaggedCount ? "" : "disabled") + ' onclick="onDrillRetry(\'flagged\')">Retry flagged (' + flaggedCount + ")</button>" +
+    "</div>" +
+  "</div>";
+}
+
+/* ===================== STUDY ===================== */
+function onStudySearch(value){
+  state.searchTerm = value.trim();
+  renderStudy();
+}
+function onStudyToggle(n){
+  state.study.open[n] = !state.study.open[n];
+  renderStudy();
+}
+function renderStudy(){
+  var el = document.getElementById("tab-study");
+  var term = state.searchTerm;
+  var badgeClass = { Easy: "badge-easy", Medium: "badge-medium", High: "badge-high" };
+
+  var head = '<div class="panel">' +
+    '<label class="mono search-label" for="studySearch">Search study content, cards &amp; cheat sheet</label>' +
+    '<input id="studySearch" type="search" class="search-input" placeholder="e.g. IQR, Veracity, Chi-Square…" value="' + escapeHtml(term) + '" oninput="onStudySearch(this.value)">' +
+  "</div>";
+
+  var modulesHtml = STUDY.map(function(mod){
+    var rendered = renderBlocks(mod.blocks, term);
+    if(term && !rendered.anyMatch) return "";
+    var isOpen = term ? true : !!state.study.open[mod.n];
+    return '<div class="panel module">' +
+      '<button class="module-header" onclick="onStudyToggle(' + mod.n + ')" aria-expanded="' + isOpen + '">' +
+        '<span class="module-title"><span class="mono module-num">M' + mod.n + "</span> " + hl(mod.title, term) + "</span>" +
+        '<span class="badge ' + badgeClass[mod.complexity] + '">' + mod.complexity + "</span>" +
+        '<span class="chevron">' + (isOpen ? "−" : "+") + "</span>" +
+      "</button>" +
+      (isOpen ? '<div class="module-body">' + rendered.html + "</div>" : "") +
+    "</div>";
+  }).join("");
+
+  if(term && modulesHtml.trim() === ""){
+    modulesHtml = '<div class="panel"><p class="muted">No study content matches “' + escapeHtml(term) + '”.</p></div>';
+  }
+
+  el.innerHTML = head + modulesHtml;
+  var input = document.getElementById("studySearch");
+  if(input && document.activeElement !== input){
+    var v = input.value;
+    input.focus();
+    input.setSelectionRange(v.length, v.length);
+  }
+}
+
+/* ===================== CARDS ===================== */
+function onCardsDeck(deck){
+  state.cards.deck = deck;
+  state.cards.index = 0;
+  state.cards.flipped = false;
+  renderCards();
+}
+function currentDeckList(){
+  var term = state.searchTerm;
+  var list = CARDS[state.cards.deck];
+  if(!term) return list;
+  return list.filter(function(c){ return textMatches(c.f, term) || textMatches(c.b, term); });
+}
+function onCardsFlip(){
+  state.cards.flipped = !state.cards.flipped;
+  renderCards();
+}
+function onCardsNav(delta){
+  var list = currentDeckList();
+  if(list.length === 0) return;
+  state.cards.index = (state.cards.index + delta + list.length) % list.length;
+  state.cards.flipped = false;
+  renderCards();
+}
+function onCardKeydown(e){
+  if(e.key === " " || e.key === "Enter"){ e.preventDefault(); onCardsFlip(); }
+  else if(e.key === "ArrowRight"){ onCardsNav(1); }
+  else if(e.key === "ArrowLeft"){ onCardsNav(-1); }
+}
+var touchStartX = null;
+function onCardTouchStart(e){ touchStartX = e.changedTouches[0].clientX; }
+function onCardTouchEnd(e){
+  if(touchStartX === null) return;
+  var dx = e.changedTouches[0].clientX - touchStartX;
+  if(Math.abs(dx) > 40){ onCardsNav(dx < 0 ? 1 : -1); }
+  touchStartX = null;
+}
+function renderCards(){
+  var el = document.getElementById("tab-cards");
+  var term = state.searchTerm;
+
+  var deckBtns = CARD_DECKS.map(function(d){
+    var active = state.cards.deck === d[0];
+    return '<button class="chip' + (active ? " chip-active" : "") + '" onclick="onCardsDeck(\'' + d[0] + '\')">' + d[1] + "</button>";
+  }).join("");
+
+  var head = '<div class="panel"><div class="chip-row">' + deckBtns + "</div></div>";
+
+  var list = currentDeckList();
+  var body;
+  if(list.length === 0){
+    body = '<div class="panel"><p class="muted">No cards match “' + escapeHtml(term) + '” in this deck.</p></div>';
+  } else {
+    if(state.cards.index >= list.length) state.cards.index = 0;
+    var card = list[state.cards.index];
+    var counter = String(state.cards.index + 1).padStart(2, "0") + " / " + String(list.length).padStart(2, "0");
+    var isSubjective = state.cards.deck === "subjective";
+    body = '<div class="panel cards-panel">' +
+      '<div class="cards-counter mono muted">' + counter + "</div>" +
+      '<div class="flashcard' + (state.cards.flipped ? " is-flipped" : "") + (isSubjective ? " flashcard-tall" : "") + '" tabindex="0" role="button" ' +
+        'aria-label="Flashcard, press space or enter to flip, arrow keys to navigate" ' +
+        'onclick="onCardsFlip()" onkeydown="onCardKeydown(event)" ontouchstart="onCardTouchStart(event)" ontouchend="onCardTouchEnd(event)">' +
+        '<div class="flashcard-face flashcard-front"><div class="flashcard-scroll">' + hl(card.f, term) + "</div></div>" +
+        '<div class="flashcard-face flashcard-back"><div class="flashcard-scroll">' + hl(card.b, term) + "</div></div>" +
+      "</div>" +
+      '<div class="cards-nav">' +
+        '<button class="btn-ghost" onclick="onCardsNav(-1)" aria-label="Previous card">← Prev</button>' +
+        '<button class="btn-ghost" onclick="onCardsFlip()">Flip</button>' +
+        '<button class="btn-ghost" onclick="onCardsNav(1)" aria-label="Next card">Next →</button>' +
+      "</div>" +
+    "</div>";
+  }
+  el.innerHTML = head + body;
+  var fc = el.querySelector(".flashcard");
+  if(fc) fc.focus({ preventScroll: true });
+}
+
+/* ===================== CHEAT ===================== */
+function renderCheat(){
+  var el = document.getElementById("tab-cheat");
+  var term = state.searchTerm;
+  var rendered = renderBlocks(CHEAT_BLOCKS, term);
+  var html = rendered.html;
+  if(term && !rendered.anyMatch){
+    html = '<p class="muted">No cheat-sheet lines match “' + escapeHtml(term) + '”.</p>';
+  }
+  el.innerHTML = '<div class="panel cheat-sheet">' +
+    '<h2 class="block-h cheat-title">DX Level 1 — Cheat Sheet</h2>' +
+    html +
+  "</div>";
+}
+
+/* ===================== CHECK ===================== */
+function renderCheck(){
+  var el = document.getElementById("tab-check");
+  var cards = CHECK_CLAIMS.map(function(c){
+    var riskClass = c.risk.indexOf("High") === 0 ? "badge-high" : (c.risk.indexOf("Medium") === 0 ? "badge-medium" : "badge-easy");
+    return '<div class="panel check-card">' +
+      '<div class="check-claim">' + escapeHtml(c.claim) + "</div>" +
+      '<div class="check-deck"><span class="mono muted">DECK SAYS:</span> ' + escapeHtml(c.deck) + "</div>" +
+      '<span class="badge ' + riskClass + '">' + c.risk + " risk</span>" +
+    "</div>";
+  }).join("");
+
+  el.innerHTML = '<div class="panel check-note">' +
+    "<p>The exam is stated to be based only on the training materials provided. These claims appear in the compiled notes but do not trace to the source deck. Treat them with caution.</p>" +
+  "</div>" + cards;
+}
+
+/* ===================== boot ===================== */
+document.querySelectorAll(".tab-btn").forEach(function(btn){
+  btn.addEventListener("click", function(){ onTabSwitch(btn.dataset.tab); });
+});
+buildDrillSet();
+renderDrill();
+
+</script>
+</body>
+</html>
