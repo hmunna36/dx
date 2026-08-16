@@ -218,6 +218,7 @@ main{ padding: 16px; padding-bottom: 60px; }
 .badge-high{ color: var(--alert); }
 .badge-deck{ color: var(--series-a); }
 .badge-notes{ color: var(--amber); }
+.badge-past{ color: var(--series-b); }
 
 table{
   width: 100%;
@@ -470,6 +471,7 @@ button{ font-family: inherit; }
 .check-card{ display:flex; flex-direction:column; gap:6px; }
 .check-claim{ font-weight:700; }
 .check-deck{ font-size: 0.88rem; color: var(--ink); }
+.check-resolution{ font-size: 0.88rem; color: var(--series-b); padding-top: 4px; border-top: 1px solid var(--grid); }
 
 /* ---------- print ---------- */
 @media print{
@@ -707,7 +709,32 @@ const QUESTIONS = [
 {id:"M6-10",m:6,q:"What is the three-part DEJ experience ladder?",opts:["Connect Me → Recognize Me → Fit in with Me","Aware → Explore → Decide","Trigger → Accelerator → Tracker","First → Unique → New"],a:0,why:"Common value → beyond expectation → WoW!! experience value."},
 {id:"M6-11",m:6,q:"HEAVEN supports the integrated development of:",opts:["Mechanic, LCM, package","Circuit, power, picture quality, sound quality","SW virtual verification","Requirement management"],a:1,why:"HERMES covers mechanical/LCM/package; HEY!TAS is SW virtual verification."},
 {id:"M6-12",m:6,q:"Which system handles SW virtual verification?",opts:["HE-VPDS","HEY!TAS","HERMES","PINE"],a:1,why:"HE-VPDS is HW virtual verification; HEY!TAS is SW."},
-{id:"M6-13",m:6,q:"Under 'Provide Customer Value', which pillar covers SW upgrades delivered at the right time via PINE?",opts:["Personalization","Optimization","Specialization","Servitization"],a:1,why:"Personalization = tailored services; Optimization = PINE upgrades; Specialization = new products like StandbyMe Go."}
+{id:"M6-13",m:6,q:"Under 'Provide Customer Value', which pillar covers SW upgrades delivered at the right time via PINE?",opts:["Personalization","Optimization","Specialization","Servitization"],a:1,why:"Personalization = tailored services; Optimization = PINE upgrades; Specialization = new products like StandbyMe Go."},
+{id:"P-01",m:1,past:true,q:"Choose the INCORRECT statement regarding Domain DX capabilities required by the company.",opts:["Propose Task","Securing Top DX Talent / Recruitment of Top Talent","Simple Analysis","Collaboration with a specialized Data Scientist"],a:1,why:"The four required capabilities are Propose Task, Simple Analysis, Collaborate with Specialized Data Scientist, Leading Task."},
+{id:"P-02",m:1,past:true,q:"What HE is NOT looking for in domain specialists' capabilities?",opts:["Propose tasks","Simple Analyse","Hire the DX specialist","Collaborate with Specialized data scientist"],a:2,why:"Same trap as P-01, reworded. Hiring is not a domain-specialist capability."},
+{id:"P-03",m:1,past:true,q:"Which of the following correctly describes the order of the three stages of digital change?",opts:["Digitalization → Digitization → Digital Transformation","Digital Transformation → Digitalization → Digitization","Digitization → Digitalization → Digital Transformation","Digitization → Digital Transformation → Digitalization"],a:2,why:"Digitization (of information) → Digitalization (of process) → Digital Transformation (business innovation)."},
+{id:"P-04",m:1,past:true,q:"Pick the INCORRECT one related to DX capability.",opts:["Transformation should be led by field workers","Transformation should be led by an expert (consultant)","Big data use is a key digital capability","Domain DX capability is required by the field"],a:1,why:"Led by field workers, NOT consultants."},
+{id:"P-05",m:1,past:true,q:"Select the INCORRECT statement regarding the HE headquarters DX status.",opts:["DX for customers","DX for company","Business model innovation","Process innovation"],a:3,why:"The three axes are DX for Customer, DX for Company, Business Model Innovation."},
+{id:"P-06",m:1,past:true,q:"The use of what is a key digital capability, a way to understand customers and businesses, and a gift to us from customers?",opts:["Cloud computing","Big Data","Blockchain","Robotics"],a:1,why:"Recalled verbatim from a real sitting."},
+{id:"P-07",m:2,past:true,q:"Which of the following is a CORRECT description of data-driven vs intuition-driven decision-making?",opts:["Intuition-based decision-making relies on facts and data","Data-driven decision-making draws inspiration from previous experience","Intuition-based decision-making inherently carries risk","Data-driven decision-making selects the best guess without evidence"],a:2,why:"Intuition relies on previous experience and carries risk; data-driven is based on facts, not intuition."},
+{id:"P-08",m:2,past:true,q:"What is the correct order of development stages of big-data-based decision-making?",opts:["Prediction → Description → Diagnosis → Prescription","Description → Diagnosis → Prediction → Prescription","Diagnosis → Description → Prediction → Prescription","Description → Prediction → Diagnosis → Prescription"],a:1,why:"What happened → Why did it happen → What will happen → What should I do."},
+{id:"P-09",m:2,past:true,q:"Which of the following is INCORRECT about the significance/characteristics of big data analysis?",opts:["Insights can be obtained from big data","It is possible to capture singularities that have been overlooked","We can better understand the population through sample surveys","A case-centered inductive approach is possible based on big data"],a:2,why:"Big data changes analysis FROM a sample survey TO a complete/total survey. This exact question appeared in the 24/03 sitting."},
+{id:"P-10",m:3,past:true,q:"\"Regardless of who collects or measures, and no matter how many times it is repeated, the values should be the same.\" Which data quality is being explained?",opts:["Timeliness","Validity","Consistency","Completeness"],a:2,why:"Marked as Consistency in the official answer key. Note this overlaps with the deck's definition of Precision — see the Check tab."},
+{id:"P-11",m:3,past:true,q:"Data is getting updated on a monthly basis, so the team lead cannot get weekly updates. Which data quality is lacking?",opts:["Validity","Accuracy","Timeliness","Precision"],a:2,why:"Timeliness = data obtainable when needed, without excessive delay."},
+{id:"P-12",m:3,past:true,q:"Which of the following is NOT affected by outliers (abnormal data)?",opts:["Mean","Standard Deviation","Range","Median"],a:3,why:"Median and IQR resist outliers."},
+{id:"P-13",m:3,past:true,q:"The factor of outliers does not affect which term?",opts:["Mean","The value located in the middle when data is sorted in ascending order","Standard deviation","Range"],a:1,why:"Same question as P-12, phrased as a definition of the median instead of naming it."},
+{id:"P-14",m:3,past:true,q:"Find the correct option describing a dependent variable.",opts:["A variable whose value is fixed by the analyst","A variable whose value changes depending on the situation or conditions","A variable that never appears in the model","A constant added to the regression equation"],a:1,why:"Y is the dependent/response/outcome variable; X is independent/explanatory/predictor."},
+{id:"P-15",m:3,past:true,q:"What is called the process of dividing the data into similar groups?",opts:["Regression Analysis","Classification Analysis","Cluster Analysis","Time Series Analysis"],a:2,why:"Cluster Analysis — unsupervised learning."},
+{id:"P-16",m:3,past:true,q:"Which time series component represents \"long-term fluctuations due to changes in population, resources, and technology\"?",opts:["Seasonal","Cycle","Trend","Irregular"],a:2,why:"Trend = long-term, slow directional change. In one sitting this was asked with four graph images — the uniformly increasing graph is the answer."},
+{id:"P-17",m:3,past:true,q:"What data analysis method is used to verify hypothesis testing and quantify the results?",opts:["CDA","EDA","DDA","PDA"],a:0,why:"Confirmatory Data Analysis is the hypothesis-testing stage."},
+{id:"P-18",m:3,past:true,q:"Choose the perfect match: which analysis generates the function to do proper prediction?",opts:["DDA","EDA","CDA","PDA"],a:3,why:"PDA builds Y = f(X) for prediction."},
+{id:"P-19",m:3,past:true,q:"Which of the following is NOT a Basic Principle of Model Development?",opts:["Best Fitting","Most parsimonious","Practically Reasonable","Variance optimization"],a:3,why:"The three are Best Fitting, Principles of Economics (most parsimonious), Practically Reasonable."},
+{id:"P-20",m:3,past:true,q:"If data is being extracted every Monday for 2 months, what type of data extraction method is this?",opts:["Simple Random Sampling","Systematic Sampling","Cluster Sampling","Stratified Random Sampling"],a:1,why:"Regular intervals of time = Systematic."},
+{id:"P-21",m:3,past:true,q:"Which hypothesis test compares 2 groups for continuous data?",opts:["2-Sample T-Test","ANOVA Test","2-Proportion Test","Chi-Square Test"],a:0,why:"Appeared as a subjective question in one sitting and inside the case study in another."},
+{id:"P-22",m:3,past:true,q:"Arrange the following into the correct sequence: DDA, PDA, EDA, CDA.",opts:["DDA → CDA → EDA → PDA","DDA → EDA → CDA → PDA","EDA → DDA → CDA → PDA","DDA → EDA → PDA → CDA"],a:1,why:"Descriptive → Exploratory → Confirmatory → Predictive."},
+{id:"P-23",m:2,past:true,q:"Choose the correct one regarding labelled and unlabelled data.",opts:["HTML data is the labelled data","Most of the social media data is unlabeled data","Labeled data cannot be stored","Unlabeled data cannot be captured"],a:1,why:"Social media arrives as raw content with no outcome attached. HTML tags describe structure, not labels."},
+{id:"P-24",m:3,past:true,q:"A company compares new vs existing components, tested across three production lines (A, B, C), with samples randomly selected from each. Which hypothesis test applies?",opts:["ANOVA Test","2-Sample T-Test","Chi-Square Test","2-Proportion Test"],a:1,why:"THE key trap. Three lines are sampling strata, not comparison groups. New vs existing = 2 groups, performance = continuous → 2-Sample T-Test."},
+{id:"P-25",m:3,past:true,q:"In that same three-production-line scenario, what data extraction method is used?",opts:["Systematic Sampling","Simple Random Sampling","Stratified Sampling","Cluster Sampling"],a:2,why:"Population divided into groups (lines), then randomly sampled from each group."}
 ];
 
 const BLANKS = [
@@ -1253,7 +1280,8 @@ const CARDS = {
     {f:"What is a Citizen Data Scientist and why is one needed?", b:"A field worker who combines domain expertise with data/AI capability, able to ① propose a task ② do simple analysis ③ collaborate with a specialized data scientist ④ lead a task. Needed because the big data analysis market grows nearly 30% annually while the supply of professional data scientists is insufficient; augmented analysis now lets anyone access Big Data/AI; and Big Data/AI capability is becoming a basic capability rather than a specialism."},
     {f:"What is the role of a DX Facilitator?", b:"Find the task's KPI; transform practical issues into data issues; autonomously execute DX duties — bridging field operations and data analysis."},
     {f:"Explain the difference between Predictive and Corrective work styles.", b:"Corrective is reactive: fix problems after they arise and prevent recurrence, using PDCA and DMAIC. Preventive removes the cause of the issue in advance using FMEA and DRBFM. Predictive anticipates and responds to issues before they occur using Big Data and AI."},
-    {f:"What are the three roles of DX within the C-D-P system?", b:"Trigger (better understand customers and identify insights using data), Accelerator (provide solutions for CX implementation using digital technology), Tracker (monitor CX delivery using data)."}
+    {f:"What are the three roles of DX within the C-D-P system?", b:"Trigger (better understand customers and identify insights using data), Accelerator (provide solutions for CX implementation using digital technology), Tracker (monitor CX delivery using data)."},
+    {f:"If data is being extracted every Monday for 2 months, what type of data extraction method is this? (recalled real-exam subjective question)", b:"Systematic Sampling — sampling at regular intervals of time or space."}
   ]
 };
 
@@ -1315,6 +1343,13 @@ const CHECK_CLAIMS = [
   {claim:"“204 Million LG Smart TVs sold globally,” “500 servers, 2,100 CPU cores,” “30 systems”", deck:"Not present. The deck does state 1.7PB for T-LAMP and ~2,157TB internal / 2,415TB enterprise data — those check out; the other figures do not.", risk:"Medium"},
   {claim:"HEY!TAS automation targets: 2023 ~50%, 2024 80%, 2025 100%", deck:"Not present in the deck.", risk:"Low–Medium"},
   {claim:"3C2S listed as “Connectivity, Core, Customization, Servitization, Sustainability”", deck:"The deck says Care, not Core. This one is an outright error — correct it.", risk:"High"}
+];
+
+const CHECK_CONFLICTS = [
+  {title:"Cultural consensus order", detail:"One recalled past-paper sheet writes “awareness → accept → understand → participate”; two others write “awareness/recognize → understand → accept → participate.”", resolution:"Use Recognize → Understand → Accept → Participate. It matches the source deck and the majority of recalled sheets. The odd one out is a transcription slip."},
+  {title:"Consistency vs Precision", detail:"A past paper marks “regardless of who measures or how many repetitions, values should be the same” as Consistency. The deck assigns that exact wording to Precision, and defines Consistency as meaning/criteria being the same across time and space.", resolution:"If the option list contains both, pick Precision for the repeatability wording. If it contains Consistency but not Precision (as in the real paper), pick Consistency. Read the options before deciding."},
+  {title:"“What is incorrect about Big Data?”", detail:"One recalled sheet marks “Sampling error is reduced” as the incorrect statement, but per the deck a complete survey removes sampling error, which makes that statement true.", resolution:"Trust the 24/03 official-format version: the incorrect statement is “We can better understand the population through sample surveys.” The other recall is unreliable."},
+  {title:"“What is true about EDA?”", detail:"Marked answer is “Can help in determining the outliers,” yet the other listed options (box plot is most used in EDA; can find correlation between variables) are also true per the deck.", resolution:"Ambiguous recall. Outlier detection is the safest answer, since box-plot outlier identification is explicitly stated in the deck. Do not over-index on this item."}
 ];
 
 
@@ -1472,6 +1507,8 @@ function buildDrillSet(subsetIds){
     pool = subsetIds.slice();
   } else if(state.drill.moduleFilter === "all"){
     pool = QUESTIONS.map(function(q){ return q.id; });
+  } else if(state.drill.moduleFilter === "past"){
+    pool = QUESTIONS.filter(function(q){ return q.past; }).map(function(q){ return q.id; });
   } else {
     var m = state.drill.moduleFilter;
     pool = QUESTIONS.filter(function(q){ return q.m === m; }).map(function(q){ return q.id; });
@@ -1482,7 +1519,7 @@ function buildDrillSet(subsetIds){
   state.drill.answers = {};
 }
 function onDrillFilter(mod){
-  state.drill.moduleFilter = mod === "all" ? "all" : Number(mod);
+  state.drill.moduleFilter = (mod === "all" || mod === "past") ? mod : Number(mod);
   buildDrillSet();
   renderDrill();
 }
@@ -1530,9 +1567,9 @@ function moduleTag(m){ return "M" + m; }
 
 function renderDrill(){
   var el = document.getElementById("tab-drill");
-  var chips = ["all", 1, 2, 3, 4, 5, 6].map(function(m){
-    var label = m === "all" ? "All" : moduleTag(m);
-    var active = state.drill.moduleFilter === (m === "all" ? "all" : m);
+  var chips = ["all", 1, 2, 3, 4, 5, 6, "past"].map(function(m){
+    var label = m === "all" ? "All" : (m === "past" ? "PAST" : moduleTag(m));
+    var active = state.drill.moduleFilter === m;
     return '<button class="chip' + (active ? " chip-active" : "") + '" onclick="onDrillFilter(\'' + m + '\')">' + label + "</button>";
   }).join("");
 
@@ -1565,6 +1602,7 @@ function renderDrillQuestion(){
   var srcBadge = "";
   if(q.src === "deck") srcBadge = '<span class="badge badge-deck">DECK</span>';
   if(q.src === "notes") srcBadge = '<span class="badge badge-notes">NOTES</span>';
+  if(q.past) srcBadge += '<span class="badge badge-past">PAST</span>';
 
   var optsHtml = q.opts.map(function(opt, idx){
     var cls = "option";
@@ -1622,9 +1660,20 @@ function renderDrillSummary(){
   var wrongCount = state.drill.order.filter(function(id){ var a = state.drill.answers[id]; return a && !a.correct; }).length;
   var flaggedCount = state.drill.order.filter(function(id){ return state.drill.flagged[id]; }).length;
 
+  var pastIds = state.drill.order.filter(function(id){
+    return QUESTIONS.filter(function(x){ return x.id === id; })[0].past;
+  });
+  var pastLine = "";
+  if(pastIds.length){
+    var pastCorrect = pastIds.filter(function(id){ var a = state.drill.answers[id]; return a && a.correct; }).length;
+    var pastPct = Math.round((pastCorrect / pastIds.length) * 100);
+    pastLine = '<p class="muted">Past-paper subset: <b class="mono">' + pastCorrect + " / " + pastIds.length + " (" + pastPct + "%)</b> — the best available predictor of real exam performance.</p>";
+  }
+
   return '<div class="panel drill-summary">' +
     '<h3 class="block-h">Set complete — ' + s.correct + " / " + s.answered + " (" + s.pct + "%)</h3>" +
     '<p class="muted">Pass line is 80%. ' + (s.pct >= 80 ? "You cleared it on this set." : "Below pass line on this set — drill the weak module again.") + "</p>" +
+    pastLine +
     '<div class="table-wrap"><table><thead><tr><th>Module</th><th>Score</th><th>%</th></tr></thead><tbody>' + rows + "</tbody></table></div>" +
     '<div class="drill-actions">' +
       '<button class="btn-primary" ' + (wrongCount ? "" : "disabled") + ' onclick="onDrillRetry(\'wrong\')">Retry wrong only (' + wrongCount + ")</button>" +
@@ -1997,9 +2046,20 @@ function renderCheck(){
     "</div>";
   }).join("");
 
+  var conflictCards = CHECK_CONFLICTS.map(function(c){
+    return '<div class="panel check-card">' +
+      '<div class="check-claim">' + escapeHtml(c.title) + "</div>" +
+      '<div class="check-deck">' + escapeHtml(c.detail) + "</div>" +
+      '<div class="check-resolution"><span class="mono muted">USE:</span> ' + escapeHtml(c.resolution) + "</div>" +
+    "</div>";
+  }).join("");
+
   el.innerHTML = '<div class="panel check-note">' +
     "<p>The exam is stated to be based only on the training materials provided. These claims appear in the compiled notes but do not trace to the source deck. Treat them with caution.</p>" +
-  "</div>" + cards;
+  "</div>" + cards +
+  '<h3 class="block-h">Conflicts inside the past papers</h3>' +
+  '<div class="panel check-note"><p>Three recalled real-exam sittings sometimes disagree with each other or with the deck. Here is how to resolve each one.</p></div>' +
+  conflictCards;
 }
 
 /* ===================== boot ===================== */
