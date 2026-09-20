@@ -2002,7 +2002,9 @@ function onPastRetry(mode){
       var a = state.past.answers[id];
       return a && !a.correct;
     });
-  } else { ids = []; }
+  } else {
+    ids = state.past.order.slice();
+  }
   if(ids.length === 0) return;
   buildPastSet(ids);
   renderPast();
