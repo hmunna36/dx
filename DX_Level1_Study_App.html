@@ -222,6 +222,10 @@ main{ padding: 16px; padding-bottom: 60px; }
 .badge-tier3{ color: var(--series-a); }
 .badge-tier4, .badge-tier5{ color: var(--muted); }
 .badge-muted{ color: var(--muted); }
+.badge-prob{ letter-spacing: 0.02em; }
+.prob-high{ color: var(--alert); }
+.prob-mid{ color: var(--series-a); }
+.prob-low{ color: var(--muted); }
 
 table{
   width: 100%;
@@ -770,50 +774,59 @@ const BLANKS = [
 
 
 const PAST_QUESTIONS = [
-{id:"P-01",m:1,freq:2,sat:["24/03","25/05"],q:"Choose the INCORRECT statement regarding Domain DX capabilities required by the company.",opts:["Propose Task","Securing Top DX Talent / Recruitment of Top Talent","Simple Analysis","Collaboration with a specialized Data Scientist"],a:1,why:"The four required capabilities are Propose Task, Simple Analysis, Collaborate with Specialized Data Scientist, Leading Task. Same trap as P-02, different wording."},
-{id:"P-02",m:1,freq:2,sat:["24/03","25/05"],q:"What HE is NOT looking for in domain specialists' capabilities?",opts:["Propose tasks","Simple Analyse","Hire the DX specialist","Collaborate with Specialized data scientist"],a:2,why:"The 25/05 wording of the P-01 trap. Hiring is not a domain-specialist capability."},
-{id:"P-03",m:1,freq:1,sat:["24/03"],q:"Which of the following correctly describes the order of the three stages of digital change?",opts:["Digitalization → Digitization → Digital Transformation","Digital Transformation → Digitalization → Digitization","Digitization → Digitalization → Digital Transformation","Digitization → Digital Transformation → Digitalization"],a:2,why:"Digitization (of information) → Digitalization (of process) → Digital Transformation (business innovation)."},
-{id:"P-04",m:1,freq:2,sat:["11/05","25/05"],q:"Pick the INCORRECT one related to DX capability.",opts:["Transformation should be led by field workers","Transformation should be led by an expert (consultant)","Big data use is a key digital capability","Domain DX capability is required by the field"],a:1,why:"Led by field workers, NOT consultants."},
-{id:"P-05",m:1,freq:3,sat:["24/03","11/05","25/05"],q:"Select the INCORRECT statement regarding the HE headquarters DX status / DX activity axes.",opts:["DX for customers","DX for company","Business model innovation","Process innovation"],a:3,why:"The three axes are DX for Customer, DX for Company, Business Model Innovation. Appeared in ALL THREE sittings."},
-{id:"P-06",m:1,freq:2,sat:["11/05","25/05"],q:"The use of what is a key digital capability, a way to understand customers and businesses, and a gift to us from customers?",opts:["Cloud computing","Big Data","Blockchain","Robotics"],a:1,why:"Recalled verbatim from two sittings."},
-{id:"P-07",m:2,freq:3,sat:["24/03","11/05","25/05"],q:"Which of the following is a CORRECT description of data-driven vs intuition-driven decision-making?",opts:["Intuition-based decision-making relies on facts and data","Data-driven decision-making draws inspiration from previous experience","Intuition-based decision-making inherently carries risk","Data-driven decision-making selects the best guess without evidence"],a:2,why:"Intuition relies on previous experience and carries risk; data-driven is based on facts. On 11/05 and 25/05 this was worded as 'data-driven decision making relies on facts'. ALL THREE sittings."},
-{id:"P-08",m:2,freq:3,sat:["24/03","11/05","25/05"],q:"What is the correct order of development stages of big-data-based decision-making?",opts:["Prediction → Description → Diagnosis → Prescription","Description → Diagnosis → Prediction → Prescription","Diagnosis → Description → Prediction → Prescription","Description → Prediction → Diagnosis → Prescription"],a:1,why:"What happened → Why → What will happen → What should I do. ALL THREE sittings."},
-{id:"P-09",m:2,freq:2,sat:["24/03","25/05"],q:"Which of the following is INCORRECT about the significance/characteristics of big data analysis?",opts:["Insights can be obtained from big data","It is possible to capture singularities that have been overlooked","We can better understand the population through sample surveys","A case-centered inductive approach is possible based on big data"],a:2,why:"Big data changes analysis FROM a sample survey TO a complete/total survey. See the Check tab — the 25/05 recall of this item is unreliable."},
-{id:"P-10",m:3,freq:1,sat:["24/03"],q:"\"Regardless of who collects or measures, and no matter how many times it is repeated, the values should be the same.\" Which data quality is being explained?",opts:["Timeliness","Validity","Consistency","Completeness"],a:2,why:"Marked as Consistency in the 24/03 answer key. Note this overlaps the deck's definition of Precision — see the Check tab."},
-{id:"P-11",m:3,freq:2,sat:["11/05","25/05"],q:"Data is getting updated on a monthly basis, so the team lead cannot get weekly updates. Which data quality is lacking?",opts:["Validity","Accuracy","Timeliness","Precision"],a:2,why:"Timeliness = data obtainable when needed, without excessive delay."},
-{id:"P-12",m:3,freq:3,sat:["24/03","11/05","25/05"],q:"Which of the following is NOT affected by outliers (abnormal data)?",opts:["Mean","Standard Deviation","Range","Median"],a:3,why:"Median and IQR resist outliers. Asked on 24/03 with named options; on 11/05 and 25/05 as the definition wording (see P-13). ALL THREE sittings."},
-{id:"P-13",m:3,freq:2,sat:["11/05","25/05"],q:"The factor of outliers does not affect which term?",opts:["Mean","The value located in the middle when data is sorted in ascending order","Standard deviation","Range"],a:1,why:"The 11/05 and 25/05 wording of P-12 — the median described rather than named."},
-{id:"P-14",m:3,freq:2,sat:["11/05","25/05"],q:"Find the correct option describing a dependent variable.",opts:["A variable whose value is fixed by the analyst","A variable whose value changes depending on the situation or conditions","A variable that never appears in the model","A constant added to the regression equation"],a:1,why:"Y is the dependent/response/outcome variable; X is independent/explanatory/predictor."},
-{id:"P-15",m:3,freq:3,sat:["24/03","11/05","25/05"],q:"What is called the process of dividing the data into similar groups?",opts:["Regression Analysis","Classification Analysis","Cluster Analysis","Time Series Analysis"],a:2,why:"Cluster Analysis — unsupervised learning. ALL THREE sittings."},
-{id:"P-16",m:3,freq:3,sat:["24/03","11/05","25/05"],q:"Which time series component represents \"long-term fluctuations due to changes in population, resources, and technology\"?",opts:["Seasonal","Cycle","Trend","Irregular"],a:2,why:"Trend = long-term, slow directional change. On 11/05 and 25/05 this was asked with four graph images — the uniformly increasing graph is the answer. ALL THREE sittings."},
-{id:"P-17",m:3,freq:1,sat:["25/05"],q:"What data analysis method is used to verify hypothesis testing and quantify the results?",opts:["CDA","EDA","DDA","PDA"],a:0,why:"Confirmatory Data Analysis is the hypothesis-testing stage."},
-{id:"P-18",m:3,freq:2,sat:["11/05","25/05"],q:"Choose the perfect match: which analysis generates the function to do proper prediction?",opts:["DDA","EDA","CDA","PDA"],a:3,why:"PDA builds Y = f(X) for prediction."},
-{id:"P-19",m:3,freq:1,sat:["25/05"],q:"Which of the following is NOT a Basic Principle of Model Development?",opts:["Best Fitting","Most parsimonious","Practically Reasonable","Variance optimization"],a:3,why:"The three are Best Fitting, Principles of Economics (most parsimonious), Practically Reasonable."},
-{id:"P-20",m:3,freq:1,sat:["24/03"],q:"If data is being extracted every Monday for 2 months, what type of data extraction method is this?",opts:["Simple Random Sampling","Systematic Sampling","Cluster Sampling","Stratified Random Sampling"],a:1,why:"Regular intervals of time = Systematic. Asked as a subjective on 24/03."},
-{id:"P-21",m:3,freq:2,sat:["24/03","25/05"],q:"Which hypothesis test compares 2 groups for continuous data?",opts:["2-Sample T-Test","ANOVA Test","2-Proportion Test","Chi-Square Test"],a:0,why:"Subjective on 24/03; embedded in the 25/05 case study as Q25."},
-{id:"P-22",m:3,freq:2,sat:["24/03","25/05"],q:"Arrange the following into the correct sequence: DDA, PDA, EDA, CDA.",opts:["DDA → CDA → EDA → PDA","DDA → EDA → CDA → PDA","EDA → DDA → CDA → PDA","DDA → EDA → PDA → CDA"],a:1,why:"Descriptive → Exploratory → Confirmatory → Predictive. Subjective on 24/03; case study Q24 on 25/05."},
-{id:"P-23",m:2,freq:2,sat:["11/05","25/05"],q:"Choose the correct one regarding labelled and unlabelled data.",opts:["HTML data is the labelled data","Most of the social media data is unlabeled data","Labeled data cannot be stored","Unlabeled data cannot be captured"],a:1,why:"Social media arrives as raw content with no outcome attached. HTML tags describe structure, not labels."},
-{id:"P-24",m:3,freq:1,sat:["25/05"],q:"A company compares new vs existing components, tested across three production lines (A, B, C), with samples randomly selected from each. Which hypothesis test applies?",opts:["ANOVA Test","2-Sample T-Test","Chi-Square Test","2-Proportion Test"],a:1,why:"THE key trap. Three lines are sampling strata, not comparison groups. New vs existing = 2 groups, performance = continuous → 2-Sample T-Test."},
-{id:"P-25",m:3,freq:1,sat:["25/05"],q:"In that same three-production-line scenario, what data extraction method is used?",opts:["Systematic Sampling","Simple Random Sampling","Stratified Sampling","Cluster Sampling"],a:2,why:"Population divided into groups (lines), then randomly sampled from each group."},
-{id:"P-26",m:3,freq:1,sat:["25/05"],q:"What is true about EDA?",opts:["Box-plot is the mostly used graph in EDA","Can find the correlation between variables","Can help in determining the outliers","Can find patterns which can't be done by CDA"],a:2,why:"Marked answer is outlier determination. Note options 1 and 2 are also defensible per the deck — see the Check tab. Do not over-index on this item."}
+{id:"P-01",m:1,freq:3,sat:["24/03","25/05","18/09"],q:"Choose the INCORRECT statement regarding Domain DX capabilities required by the company.",opts:["Propose Task","Securing Top DX Talent / Recruitment of Top Talent","Simple Analysis","Collaboration with a specialized Data Scientist"],a:1,why:"The four required capabilities are Propose Task, Simple Analysis, Collaborate with Specialized Data Scientist, Leading Task. Same trap as P-02, different wording.",prob:67},
+{id:"P-02",m:1,freq:2,sat:["24/03","25/05"],q:"What HE is NOT looking for in domain specialists' capabilities?",opts:["Propose tasks","Simple Analyse","Hire the DX specialist","Collaborate with Specialized data scientist"],a:2,why:"The 25/05 wording of the P-01 trap. Hiring is not a domain-specialist capability.",prob:50},
+{id:"P-03",m:1,freq:1,sat:["24/03"],q:"Which of the following correctly describes the order of the three stages of digital change?",opts:["Digitalization → Digitization → Digital Transformation","Digital Transformation → Digitalization → Digitization","Digitization → Digitalization → Digital Transformation","Digitization → Digital Transformation → Digitalization"],a:2,why:"Digitization (of information) → Digitalization (of process) → Digital Transformation (business innovation).",prob:33},
+{id:"P-04",m:1,freq:3,sat:["11/05","25/05","18/09"],q:"Pick the INCORRECT one related to DX capability.",opts:["Transformation should be led by field workers","Transformation should be led by an expert (consultant)","Big data use is a key digital capability","Domain DX capability is required by the field"],a:1,why:"Led by field workers, NOT consultants.",prob:67},
+{id:"P-05",m:1,freq:3,sat:["24/03","11/05","25/05"],q:"Select the INCORRECT statement regarding the HE headquarters DX status / DX activity axes.",opts:["DX for customers","DX for company","Business model innovation","Process innovation"],a:3,why:"The three axes are DX for Customer, DX for Company, Business Model Innovation. Appeared in ALL THREE sittings.",prob:67},
+{id:"P-06",m:1,freq:3,sat:["11/05","25/05","18/09"],q:"The use of what is a key digital capability, a way to understand customers and businesses, and a gift to us from customers?",opts:["Cloud computing","Big Data","Blockchain","Robotics"],a:1,why:"Recalled verbatim from two sittings.",prob:67},
+{id:"P-07",m:2,freq:4,sat:["24/03","11/05","25/05","18/09"],q:"Which of the following is a CORRECT description of data-driven vs intuition-driven decision-making?",opts:["Intuition-based decision-making relies on facts and data","Data-driven decision-making draws inspiration from previous experience","Intuition-based decision-making inherently carries risk","Data-driven decision-making selects the best guess without evidence"],a:2,why:"Intuition relies on previous experience and carries risk; data-driven is based on facts. On 11/05 and 25/05 this was worded as 'data-driven decision making relies on facts'. ALL THREE sittings.",prob:83},
+{id:"P-08",m:2,freq:4,sat:["24/03","11/05","25/05","18/09"],q:"What is the correct order of development stages of big-data-based decision-making?",opts:["Prediction → Description → Diagnosis → Prescription","Description → Diagnosis → Prediction → Prescription","Diagnosis → Description → Prediction → Prescription","Description → Prediction → Diagnosis → Prescription"],a:1,why:"What happened → Why → What will happen → What should I do. ALL THREE sittings.",prob:83},
+{id:"P-09",m:2,freq:3,sat:["24/03","25/05","18/09"],q:"Which of the following is INCORRECT about the significance/characteristics of big data analysis?",opts:["Insights can be obtained from big data","It is possible to capture singularities that have been overlooked","We can better understand the population through sample surveys","A case-centered inductive approach is possible based on big data"],a:2,why:"Big data changes analysis FROM a sample survey TO a complete/total survey. See the Check tab — the 25/05 recall of this item is unreliable.",prob:67},
+{id:"P-10",m:3,freq:1,sat:["24/03"],q:"\"Regardless of who collects or measures, and no matter how many times it is repeated, the values should be the same.\" Which data quality is being explained?",opts:["Timeliness","Validity","Consistency","Completeness"],a:2,why:"Marked as Consistency in the 24/03 answer key. Note this overlaps the deck's definition of Precision — see the Check tab.",prob:33},
+{id:"P-11",m:3,freq:3,sat:["11/05","25/05","18/09"],q:"Data is getting updated on a monthly basis, so the team lead cannot get weekly updates. Which data quality is lacking?",opts:["Validity","Accuracy","Timeliness","Precision"],a:2,why:"Timeliness = data obtainable when needed, without excessive delay.",prob:67},
+{id:"P-12",m:3,freq:4,sat:["24/03","11/05","25/05","18/09"],q:"Which of the following is NOT affected by outliers (abnormal data)?",opts:["Mean","Standard Deviation","Range","Median"],a:3,why:"Median and IQR resist outliers. Asked on 24/03 with named options; on 11/05 and 25/05 as the definition wording (see P-13). ALL THREE sittings.",prob:83},
+{id:"P-13",m:3,freq:2,sat:["11/05","25/05"],q:"The factor of outliers does not affect which term?",opts:["Mean","The value located in the middle when data is sorted in ascending order","Standard deviation","Range"],a:1,why:"The 11/05 and 25/05 wording of P-12 — the median described rather than named.",prob:50},
+{id:"P-14",m:3,freq:3,sat:["11/05","25/05","18/09"],q:"Find the correct option describing a dependent variable.",opts:["A variable whose value is fixed by the analyst","A variable whose value changes depending on the situation or conditions","A variable that never appears in the model","A constant added to the regression equation"],a:1,why:"Y is the dependent/response/outcome variable; X is independent/explanatory/predictor.",prob:67},
+{id:"P-15",m:3,freq:4,sat:["24/03","11/05","25/05","18/09"],q:"What is called the process of dividing the data into similar groups?",opts:["Regression Analysis","Classification Analysis","Cluster Analysis","Time Series Analysis"],a:2,why:"Cluster Analysis — unsupervised learning. ALL THREE sittings.",prob:83},
+{id:"P-16",m:3,freq:4,sat:["24/03","11/05","25/05","18/09"],q:"Which time series component represents \"long-term fluctuations due to changes in population, resources, and technology\"?",opts:["Seasonal","Cycle","Trend","Irregular"],a:2,why:"Trend = long-term, slow directional change. On 11/05 and 25/05 this was asked with four graph images — the uniformly increasing graph is the answer. ALL THREE sittings.",prob:83},
+{id:"P-17",m:3,freq:1,sat:["25/05"],q:"What data analysis method is used to verify hypothesis testing and quantify the results?",opts:["CDA","EDA","DDA","PDA"],a:0,why:"Confirmatory Data Analysis is the hypothesis-testing stage.",prob:33},
+{id:"P-18",m:3,freq:2,sat:["11/05","25/05"],q:"Choose the perfect match: which analysis generates the function to do proper prediction?",opts:["DDA","EDA","CDA","PDA"],a:3,why:"PDA builds Y = f(X) for prediction.",prob:50},
+{id:"P-19",m:3,freq:2,sat:["25/05","18/09"],q:"Which of the following is NOT a Basic Principle of Model Development?",opts:["Best Fitting","Most parsimonious","Practically Reasonable","Variance optimization"],a:3,why:"The three are Best Fitting, Principles of Economics (most parsimonious), Practically Reasonable.",prob:50},
+{id:"P-20",m:3,freq:1,sat:["24/03"],q:"If data is being extracted every Monday for 2 months, what type of data extraction method is this?",opts:["Simple Random Sampling","Systematic Sampling","Cluster Sampling","Stratified Random Sampling"],a:1,why:"Regular intervals of time = Systematic. Asked as a subjective on 24/03.",prob:33},
+{id:"P-21",m:3,freq:3,sat:["24/03","25/05","18/09"],q:"Which hypothesis test compares 2 groups for continuous data?",opts:["2-Sample T-Test","ANOVA Test","2-Proportion Test","Chi-Square Test"],a:0,why:"Subjective on 24/03; embedded in the 25/05 case study as Q25.",prob:67},
+{id:"P-22",m:3,freq:3,sat:["24/03","25/05","18/09"],q:"Arrange the following into the correct sequence: DDA, PDA, EDA, CDA.",opts:["DDA → CDA → EDA → PDA","DDA → EDA → CDA → PDA","EDA → DDA → CDA → PDA","DDA → EDA → PDA → CDA"],a:1,why:"Descriptive → Exploratory → Confirmatory → Predictive. Subjective on 24/03; case study Q24 on 25/05.",prob:67},
+{id:"P-23",m:2,freq:2,sat:["11/05","25/05"],q:"Choose the correct one regarding labelled and unlabelled data.",opts:["HTML data is the labelled data","Most of the social media data is unlabeled data","Labeled data cannot be stored","Unlabeled data cannot be captured"],a:1,why:"Social media arrives as raw content with no outcome attached. HTML tags describe structure, not labels.",prob:50},
+{id:"P-24",m:3,freq:2,sat:["25/05","18/09"],q:"A company compares new vs existing components, tested across three production lines (A, B, C), with samples randomly selected from each. Which hypothesis test applies?",opts:["ANOVA Test","2-Sample T-Test","Chi-Square Test","2-Proportion Test"],a:1,why:"THE key trap. Three lines are sampling strata, not comparison groups. New vs existing = 2 groups, performance = continuous → 2-Sample T-Test.",prob:50},
+{id:"P-25",m:3,freq:2,sat:["25/05","18/09"],q:"In that same three-production-line scenario, what data extraction method is used?",opts:["Systematic Sampling","Simple Random Sampling","Stratified Sampling","Cluster Sampling"],a:2,why:"Population divided into groups (lines), then randomly sampled from each group.",prob:50},
+{id:"P-26",m:3,freq:1,sat:["25/05"],q:"What is true about EDA?",opts:["Box-plot is the mostly used graph in EDA","Can find the correlation between variables","Can help in determining the outliers","Can find patterns which can't be done by CDA"],a:2,why:"Marked answer is outlier determination. Note options 1 and 2 are also defensible per the deck — see the Check tab. Do not over-index on this item.",prob:33},
+{id:"P-27",m:2,past:true,freq:1,sat:["18/09"],q:"Which is the correct statement about AI, ML and Deep Learning?",opts:["ML is the subset of Deep Learning","ML and Deep Learning are the subset of AI, and it is also a rule-based algorithm","Deep Learning includes AI and ML","Artificial Intelligence is a concept that includes Machine Learning and Deep Learning, and rule-based algorithms are also Artificial Intelligence"],a:3,why:"AI is the outermost concept: AI ⊃ ML ⊃ DL. Option 2 is the near-miss — the nesting is right but calling ML/DL rule-based is wrong; rule-based algorithms are a SEPARATE branch of AI.",tier:3,prob:33},
+{id:"P-28",m:2,past:true,freq:1,sat:["18/09"],q:"Which statement is correct?",opts:["HTML data is structured data","Social media data is mostly un-structured data","We cannot process structured data","We cannot store un-structured data"],a:1,why:"The structured/unstructured sibling of P-23 (which asks the same thing as labelled/unlabelled). HTML is SEMI-structured, not structured — that is why option 1 fails.",tier:3,prob:33},
+{id:"P-29",m:2,past:true,freq:1,sat:["18/09"],q:"Which statement correctly differentiates Data Mining and Text Mining?",opts:["Data Mining targets text; Text Mining targets numbers","Text Mining is structural text and data mining","Data Mining targets numerical or categorized data with a relational structure; Text Mining targets unstructured text using NLP and ontology","Both target only numerical data"],a:2,why:"Data Mining = numerical/categorized, relational, ML. Text Mining = unstructured text, adds Indexing, Language Process, Ontology. The recalled answer key for this item is garbled — the deck-correct statement is option 3.",tier:3,prob:33},
+{id:"P-30",m:1,past:true,freq:1,sat:["18/09"],q:"Which is correct about 'DX for Company'?",opts:["It materializes customer experience","DX changes the way the company works, based on company data","It only applies to the R&D division","It replaces the need for field workers"],a:1,why:"DX for Company = cost structure innovation driven by company data (purchasing, production, quality). DX for Customer is the one that materializes customer experience.",tier:3,prob:33},
+{id:"P-31",m:3,past:true,freq:1,sat:["18/09"],q:"Which set correctly represents the Dispersion of data?",opts:["Median, Mean, Mode","Variance, Standard Deviation, Range","Median, Range, Mean","Range, Mode, Variance"],a:1,why:"Dispersion = Variance, Standard Deviation, Range. Median/Mean/Mode are measures of CENTRE, not spread. Option 4 mixes one of each — the classic trap.",tier:3,prob:33},
+{id:"P-32",m:1,past:true,freq:2,sat:["24/03","18/09"],q:"Choose the correct answer for Digitization.",opts:["Business innovation","Digitizing a process","Conversion of Analogue to Digital","Creating a new revenue stream"],a:2,why:"Digitization = data layer, analogue → digital. Digitalization = process. Digital Transformation = business.",tier:2,prob:50},
+{id:"P-33",m:1,past:true,freq:2,sat:["11/05","18/09"],q:"Identify the INCORRECT sentence about domain DX capability.",opts:["Field workers should have DX capability","The team should be led by a DX specialist","Domain experts can become Citizen Data Scientists","DX should be led by the company's project lead rather than the field"],a:3,why:"Same family as P-04. DX must be led by field workers who own the domain — not handed to a specialist, a consultant, or an org-level project lead.",tier:2,prob:50}
 ];
 
 const PAST_SUBJECTIVE = [
-{id:"S-01",freq:3,sat:["24/03","11/05","25/05"],q:"What is the term used for the total experience and emotions a customer undergoes throughout the Customer Experience Journey (CEJ)?",a:"CX — Customer Experience. The perceptions and emotions customers experience while encountering our products and services across the whole journey."},
-{id:"S-02",freq:3,sat:["24/03","11/05","25/05"],q:"What is the correct sequence of the Journey toward Cultural Consensus / Empathy required for DX transformation?",a:"Recognize (Cognition/Awareness) → Understand → Accept → Participate. Recognize the changes; understand their direction; accept the method; participate in execution."},
-{id:"S-03",freq:2,sat:["24/03","25/05"],q:"Which hypothesis test is used to compare 2 groups for continuous data?",a:"2-Sample T-Test. Full grid — continuous/2 groups: 2-Sample T-Test; continuous/3+ groups: ANOVA; discrete/2 groups: 2-Proportion Test; discrete/3+ groups: Chi-Square Test."},
-{id:"S-04",freq:2,sat:["24/03","25/05"],q:"Arrange into the correct sequence: DDA, PDA, EDA, CDA.",a:"DDA → EDA → CDA → PDA. Descriptive summarises the current state; Exploratory finds patterns via graphs; Confirmatory tests hypotheses for a decision; Predictive forecasts using the verified relationship."},
-{id:"S-05",freq:2,sat:["11/05","25/05"],q:"Fill the blanks: Digitalization of (___) — Digitization of (___) — (___) innovation. [a: data, b: information, c: process, d: business]",a:"Information — Process — Business, i.e. option bcd."},
-{id:"S-06",freq:2,sat:["11/05","25/05"],q:"The use of what is a key digital capability, a way to understand customers and businesses, and a gift to us from customers?",a:"Big Data."},
-{id:"S-07",freq:1,sat:["24/03"],q:"If data is being extracted every Monday for 2 months, what type of data extraction method is this?",a:"Systematic Sampling — sampling at regular intervals of time or space."},
-{id:"S-08",freq:1,sat:["25/05"],q:"CASE STUDY: A company compares performance of new vs existing components, tested across three production lines (A, B, C), samples randomly selected from each. (i) What data extraction method? (ii) What analysis sequence? (iii) Which hypothesis test?",a:"(i) Stratified Sampling — population divided into groups (the lines), randomly sampled from each. (ii) DDA → EDA → CDA — it stops at CDA because the goal is a decision, not a prediction. (iii) 2-Sample T-Test — the three lines are sampling strata, NOT comparison groups; new vs existing is two groups and performance is continuous."},
-{id:"S-09",freq:0,sat:[],q:"Why do most digital transformation efforts fail?",a:"Companies focus only on introducing technology and overlook the actual subject of execution: people. Success is 4–11% in traditional industries, below 26% in digital ones (5% in 2017, 8% in 2019). Contributing causes: no cultural consensus, transformation driven by consultants rather than field workers, weak Domain DX capability. The fix is Domain DX capability — field workers becoming Citizen Data Scientists and leading DX tasks themselves."},
-{id:"S-10",freq:0,sat:[],q:"What is a Citizen Data Scientist and why is one needed?",a:"A field worker who combines domain expertise with data/AI capability, able to (1) propose a task, (2) do simple analysis, (3) collaborate with a specialized data scientist, (4) lead a task. Needed because the big data analysis market grows ~30% annually while the supply of professional data scientists is insufficient, and Big Data/AI capability is becoming a basic capability rather than a specialism."}
+{id:"S-01",freq:4,sat:["24/03","11/05","25/05","18/09"],q:"What is the term used for the total experience and emotions a customer undergoes throughout the Customer Experience Journey (CEJ)?",a:"CX — Customer Experience. The perceptions and emotions customers experience while encountering our products and services across the whole journey.",prob:83},
+{id:"S-02",freq:3,sat:["24/03","11/05","25/05"],q:"What is the correct sequence of the Journey toward Cultural Consensus / Empathy required for DX transformation?",a:"Recognize (Cognition/Awareness) → Understand → Accept → Participate. Recognize the changes; understand their direction; accept the method; participate in execution.",prob:67},
+{id:"S-03",freq:3,sat:["24/03","25/05","18/09"],q:"Which hypothesis test is used to compare 2 groups for continuous data?",a:"2-Sample T-Test. Full grid — continuous/2 groups: 2-Sample T-Test; continuous/3+ groups: ANOVA; discrete/2 groups: 2-Proportion Test; discrete/3+ groups: Chi-Square Test.",prob:67},
+{id:"S-04",freq:2,sat:["24/03","25/05"],q:"Arrange into the correct sequence: DDA, PDA, EDA, CDA.",a:"DDA → EDA → CDA → PDA. Descriptive summarises the current state; Exploratory finds patterns via graphs; Confirmatory tests hypotheses for a decision; Predictive forecasts using the verified relationship.",prob:50},
+{id:"S-05",freq:3,sat:["24/03","25/05","18/09"],q:"Fill the blanks: Digitalization of (___) — Digitization of (___) — (___) innovation. [a: data, b: information, c: process, d: business]",a:"Information — Process — Business, i.e. option bcd.",prob:67},
+{id:"S-06",freq:2,sat:["11/05","25/05"],q:"The use of what is a key digital capability, a way to understand customers and businesses, and a gift to us from customers?",a:"Big Data.",prob:50},
+{id:"S-07",freq:1,sat:["24/03"],q:"If data is being extracted every Monday for 2 months, what type of data extraction method is this?",a:"Systematic Sampling — sampling at regular intervals of time or space.",prob:33},
+{id:"S-08",freq:1,sat:["25/05"],q:"CASE STUDY: A company compares performance of new vs existing components, tested across three production lines (A, B, C), samples randomly selected from each. (i) What data extraction method? (ii) What analysis sequence? (iii) Which hypothesis test?",a:"(i) Stratified Sampling — population divided into groups (the lines), randomly sampled from each. (ii) DDA → EDA → CDA — it stops at CDA because the goal is a decision, not a prediction. (iii) 2-Sample T-Test — the three lines are sampling strata, NOT comparison groups; new vs existing is two groups and performance is continuous.",prob:33},
+{id:"S-09",freq:0,sat:[],q:"Why do most digital transformation efforts fail?",a:"Companies focus only on introducing technology and overlook the actual subject of execution: people. Success is 4–11% in traditional industries, below 26% in digital ones (5% in 2017, 8% in 2019). Contributing causes: no cultural consensus, transformation driven by consultants rather than field workers, weak Domain DX capability. The fix is Domain DX capability — field workers becoming Citizen Data Scientists and leading DX tasks themselves.",prob:15},
+{id:"S-10",freq:0,sat:[],q:"What is a Citizen Data Scientist and why is one needed?",a:"A field worker who combines domain expertise with data/AI capability, able to (1) propose a task, (2) do simple analysis, (3) collaborate with a specialized data scientist, (4) lead a task. Needed because the big data analysis market grows ~30% annually while the supply of professional data scientists is insufficient, and Big Data/AI capability is becoming a basic capability rather than a specialism.",prob:15},
+{id:"S-11",freq:1,sat:["18/09"],prob:33,q:"What is the type of machine learning which is used with correct data with a label?",a:"Supervised Learning — learning from problems that come with their answers. Unsupervised uses unlabelled data; Reinforcement learns from reward and punishment with no fixed dataset."},
+{id:"S-12",freq:2,sat:["25/05","18/09"],prob:50,q:"CASE SCENARIO: What type of data extraction method will be used?",a:"Stratified Random Sampling — the population is divided into groups (production lines, cities, regions) and samples are drawn randomly from each group. Contrast with Cluster Sampling, which takes everything from a few randomly chosen clusters."}
 ];
 
 
 const STUDY = [
-{n:1, title:"DX in HE Company", complexity:"Easy", pastFreq:"Heavy", priority:"2nd", blocks:[
+{n:1, title:"DX in HE Company", complexity:"Easy", pastFreq:"Heavy (4 of 4 papers)", priority:"2nd", blocks:[
   {type:"idea", text:"Digital Transformation is a business change that happens to use technology — not a technology change that happens to affect business. Almost every M1 question is a test of whether you've internalised that distinction."},
   {type:"h4", text:"The three stages of digital change"},
   {type:"p", text:"People use \"going digital\" to mean three different things, and the exam wants you to separate them. Think of a company that still keeps paper invoices in a filing cabinet:"},
@@ -914,7 +927,7 @@ const STUDY = [
   {type:"p", text:"NPS and CXR have near-identical formulas — subtraction of one percentage from another. The difference is what is subtracted: promoters/detractors for NPS, satisfied/dissatisfied for CXR."},
   {type:"p", text:"Systems: Data Lake (repository for raw data types in LGE), Intellytics (LGE's in-house integrated AI/big-data analytics system), CPPM (Customer Pain Point Management platform)."}
 ]},
-{n:2, title:"Big Data and AI", complexity:"Easy", pastFreq:"Moderate", priority:"3rd", blocks:[
+{n:2, title:"Big Data and AI", complexity:"Easy", pastFreq:"Moderate (4 of 4 papers)", priority:"3rd", blocks:[
   {type:"idea", text:"Big data isn't defined by being large. It's defined by being large enough, fast enough, and varied enough that your old tools break — which forces new methods, which unlock things that weren't possible before."},
   {type:"h4", text:"What makes data \"big\""},
   {type:"p", text:"Gartner's definition is the one to know: cost-effective, innovative information assets characterised by Volume (high volume), Velocity (high speed), and Variety (diversity), enabling better implications and decision-making."},
@@ -966,7 +979,7 @@ const STUDY = [
   ]},
   {type:"p", text:"The deck's cooking analogy: Ingredient → Utensils → Chef → Cuisine → Customer Delight. Note stage 1 — you define the problem before touching data. Collecting first and looking for a question afterwards is the classic failure."}
 ]},
-{n:3, title:"Data Types and Analysis Methods", complexity:"High", pastFreq:"Heaviest", priority:"1st", blocks:[
+{n:3, title:"Data Types and Analysis Methods", complexity:"High", pastFreq:"Heaviest (4 of 4 papers)", priority:"1st", blocks:[
   {type:"idea", text:"Everything in this module hangs off one chain: what type is your data → which measure of centre applies → which test you're allowed to run. Get that chain and most of M3 answers itself. This is the highest-yield module in the exam."},
   {type:"h4", text:"Population, sample, parameter, statistic"},
   {type:"p", text:"The population is everyone you care about (all adult males in South Korea). The sample is the slice you actually measure (a thousand of them)."},
@@ -1115,7 +1128,7 @@ const STUDY = [
   {type:"p", text:"Three principles of model development: ① Best Fitting ② Principles of Economics (most parsimonious) ③ Practically Reasonable. Accuracy is not the only criterion — practical usefulness counts."},
   {type:"examangle", text:"Asked as \"which is NOT a basic principle?\" with \"Variance optimization\" as the false option."}
 ]},
-{n:4, title:"TV Device Data", complexity:"Easy", pastFreq:"None", priority:"5th", blocks:[
+{n:4, title:"TV Device Data", complexity:"Easy", pastFreq:"None in 4 papers", priority:"5th", blocks:[
   {type:"idea", text:"Every log answers \"what did the user do, and did they consent to us knowing?\" Collection, retention, and destruction all hang off consent."},
   {type:"p", text:"No recalled past-paper question came from this module. Skim it."},
   {type:"h4", text:"The seven logs"},
@@ -1135,7 +1148,7 @@ const STUDY = [
   {type:"p", text:"Destruction — three triggers: ① saving period expires ② user request under GDPR / CCPA ③ unsubscription or terms withdrawal."},
   {type:"p", text:"Provision: CS → CSV. GDPR/CCPA → Excel via T-LAMP. Service improvement → CSV. Index/statistical analysis → Dashboard via Intellytics. T-LAMP access is requested through Jira or EP; Intellytics through an account request."}
 ]},
-{n:5, title:"The Use of HE Data", complexity:"Medium", pastFreq:"None", priority:"6th", blocks:[
+{n:5, title:"The Use of HE Data", complexity:"Medium", pastFreq:"None in 4 papers", priority:"6th", blocks:[
   {type:"idea", text:"Collect it, pool it, then let people use it safely — with governance deciding who sees what."},
   {type:"p", text:"No recalled past-paper question came from this module. Skim it."},
   {type:"p", text:"The flow: Collect/Secure → Integrate/Store → Analyze/Utilize."},
@@ -1145,7 +1158,7 @@ const STUDY = [
   {type:"p", text:"Requests go through Jira (HEDATAPLFM) for data extraction, processing support, or consulting."},
   {type:"p", text:"Cases: StandbyMe Go UXP analysis in a DAVID dashboard; LG Channel Home App 3.0 personalisation; Hawkeye 2.0 (PainKiller) detecting pain points before customers report them, with Prosense for proactive failure sensing."}
 ]},
-{n:6, title:"HE Company's DEJ", complexity:"High", pastFreq:"None", priority:"4th", blocks:[
+{n:6, title:"HE Company's DEJ", complexity:"High", pastFreq:"None in 4 papers", priority:"4th", blocks:[
   {type:"idea", text:"DEJ is CEJ turned inward. CEJ describes the customer's journey; DEJ redesigns how R&D works so that journey comes out right."},
   {type:"p", text:"No recalled past-paper question came from this module — but it's rated High complexity, so give it more attention than M4 and M5."},
   {type:"p", text:"DEJ = Development Experience Journey."},
@@ -1310,8 +1323,9 @@ const CHECK_CLAIMS = [
 const CHECK_CONFLICTS = [
   {title:"Cultural consensus order", detail:"One recalled past-paper sheet writes “awareness → accept → understand → participate”; two others write “awareness/recognize → understand → accept → participate.”", resolution:"Use Recognize → Understand → Accept → Participate. It matches the source deck and the majority of recalled sheets. The odd one out is a transcription slip."},
   {title:"Consistency vs Precision", detail:"A past paper marks “regardless of who measures or how many repetitions, values should be the same” as Consistency. The deck assigns that exact wording to Precision, and defines Consistency as meaning/criteria being the same across time and space.", resolution:"If the option list contains both, pick Precision for the repeatability wording. If it contains Consistency but not Precision (as in the real paper), pick Consistency. Read the options before deciding."},
-  {title:"“What is incorrect about Big Data?”", detail:"One recalled sheet marks “Sampling error is reduced” as the incorrect statement, but per the deck a complete survey removes sampling error, which makes that statement true.", resolution:"Trust the 24/03 official-format version: the incorrect statement is “We can better understand the population through sample surveys.” The other recall is unreliable."},
-  {title:"“What is true about EDA?”", detail:"Marked answer is “Can help in determining the outliers,” yet the other listed options (box plot is most used in EDA; can find correlation between variables) are also true per the deck.", resolution:"Ambiguous recall. Outlier detection is the safest answer, since box-plot outlier identification is explicitly stated in the deck. Do not over-index on this item."}
+  {title:"“What is incorrect about Big Data?”", detail:"One recalled sheet marks “Sampling error is reduced” as the incorrect statement, but per the deck a complete survey removes sampling error, which makes that statement true.", resolution:"Trust the 24/03 official-format version: the incorrect statement is “We can better understand the population through sample surveys.” The 18/09 official sample carries this item with a matching key, so the 24/03 reading is now confirmed and the other recall is the unreliable one."},
+  {title:"“What is true about EDA?”", detail:"Marked answer is “Can help in determining the outliers,” yet the other listed options (box plot is most used in EDA; can find correlation between variables) are also true per the deck.", resolution:"Ambiguous recall. Outlier detection is the safest answer, since box-plot outlier identification is explicitly stated in the deck. Do not over-index on this item."},
+  {title:"Analysis order in a scenario question — RESOLVED", detail:"A scenario question asks for the order of analysis methods, and the recalled answers split over whether the sequence runs to PDA.", resolution:"Where a scenario asks for the order, the answer is DDA → EDA → CDA, stopping at CDA rather than continuing to PDA. Both the 25/05 recalled paper and the 18/09 official sample answer it this way: the scenario calls for a decision, not a forecast, so PDA is not reached. The full four-stage sequence DDA → EDA → CDA → PDA remains correct when the question asks for the sequence in the abstract."}
 ];
 
 
@@ -1459,9 +1473,28 @@ var TIER_META = {
   4: { label: "Possible", note: "core M1–M3 content, not yet observed", stars: "★★☆☆☆", cls: "t4" },
   5: { label: "Low", note: "M4–M6 — never recalled from a real sitting", stars: "★☆☆☆☆", cls: "t5" }
 };
-function tierBadge(tier){
+function tierBadge(tier, prob){
   var m = TIER_META[tier];
-  return '<span class="badge badge-tier' + tier + '" title="Tier ' + tier + ' — ' + m.label + " (" + m.note + ')">' + m.stars + "</span>";
+  var stars = '<span class="badge badge-tier' + tier + '" title="Tier ' + tier + ' — ' + m.label + " (" + m.note + ')">' + m.stars + "</span>";
+  if(prob == null) return stars;
+  return stars + probBadge(prob);
+}
+/* prob: estimated % chance the topic appears on the next paper, from four papers.
+   Rule of succession (k+1)/6 over the four papers for anything actually seen;
+   unseen topics are estimated from the share of paper slots left over. */
+function probFor(item){
+  if(item.prob != null) return item.prob;   // past/subjective: already explicit
+  switch(item.tier){
+    case 1: return 67;
+    case 2: return 50;
+    case 3: return 33;
+    case 4: return item.m === 3 ? 10 : 8;
+    default: return 2;
+  }
+}
+function probBadge(prob){
+  var band = prob >= 67 ? "prob-high" : (prob >= 33 ? "prob-mid" : "prob-low");
+  return '<span class="badge badge-prob ' + band + '" title="Estimated chance this topic appears on the next paper">' + prob + "%</span>";
 }
 
 /* ===================== score / pass-line ===================== */
@@ -1643,7 +1676,7 @@ function renderDrillQuestion(){
   return '<div class="panel drill-question">' +
     '<div class="q-meta mono">' +
       '<span>' + escapeHtml(qid) + " &middot; " + moduleTag(q.m) + "</span>" +
-      tierBadge(q.tier) +
+      tierBadge(q.tier, q.prob) +
       srcBadge +
       '<button class="flag-btn' + (flagged ? " flag-active" : "") + '" onclick="onDrillFlag(\'' + qid + '\')" aria-pressed="' + flagged + '">' + (flagged ? "★ Flagged" : "☆ Flag for review") + "</button>" +
     "</div>" +
@@ -1872,7 +1905,7 @@ function renderBlankQuestion(){
   }
 
   return '<div class="panel blank-question">' +
-    '<div class="q-meta mono"><span>' + escapeHtml(bid) + " &middot; " + moduleTag(b.m) + "</span>" + tierBadge(b.tier) + "</div>" +
+    '<div class="q-meta mono"><span>' + escapeHtml(bid) + " &middot; " + moduleTag(b.m) + "</span>" + tierBadge(b.tier, b.prob) + "</div>" +
     '<div class="blank-sentence">' + sentence + "</div>" +
     hintHtml + revealedNote +
     '<div class="drill-progress mono muted">Item ' + (state.blanks.index + 1) + " / " + state.blanks.order.length + "</div>" +
@@ -1926,7 +1959,7 @@ function buildPastSet(subsetIds){
       var m = state.past.moduleFilter;
       list = list.filter(function(q){ return q.m === m; });
     }
-    if(state.past.tripleOnly) list = list.filter(function(q){ return q.freq === 3; });
+    if(state.past.tripleOnly) list = list.filter(function(q){ return q.freq >= 3; });
     list = list.slice().sort(function(a, b){ return b.freq - a.freq; });
     pool = list.map(function(q){ return q.id; });
   }
@@ -1986,11 +2019,11 @@ function pastBadge(freq, sat){
 function renderPast(){
   var el = document.getElementById("tab-past");
   var seg = '<div class="segmented">' +
-    '<button class="' + (state.past.section === "mcq" ? "seg-active" : "") + '" onclick="onPastSection(\'mcq\')">MCQ (26)</button>' +
-    '<button class="' + (state.past.section === "subjective" ? "seg-active" : "") + '" onclick="onPastSection(\'subjective\')">Subjective (10)</button>' +
+    '<button class="' + (state.past.section === "mcq" ? "seg-active" : "") + '" onclick="onPastSection(\'mcq\')">MCQ (33)</button>' +
+    '<button class="' + (state.past.section === "subjective" ? "seg-active" : "") + '" onclick="onPastSection(\'subjective\')">Subjective (12)</button>' +
   "</div>";
 
-  var intro = '<div class="panel"><p class="past-note">Recalled from three real sittings (24/03/2026, 11/05/2026, 25/05/2026). This is the highest-value tab in the app — the best available predictor of what you\'ll actually see.</p>' + seg + "</div>";
+  var intro = '<div class="panel"><p class="past-note">Four papers: three recalled sittings (24/03/2026, 11/05/2026, 25/05/2026) plus the official Confluence sample (18/09/2026). The official sample is the examiner\'s own practice material — where a recollection disagrees with it, trust the sample. This is the highest-value tab in the app — the best available predictor of what you\'ll actually see.</p>' + seg + "</div>";
 
   var body;
   if(state.past.section === "mcq") body = renderPastMcq();
@@ -2010,7 +2043,7 @@ function renderPastMcq(){
   var head = '<div class="panel drill-controls">' +
     '<div class="chip-row">' + chips + "</div>" +
     '<div class="drill-toggles">' +
-      '<button class="chip' + (state.past.tripleOnly ? " chip-active" : "") + '" onclick="onPastTripleToggle()">×3 only</button>' +
+      '<button class="chip' + (state.past.tripleOnly ? " chip-active" : "") + '" onclick="onPastTripleToggle()">×3+ only</button>' +
       '<button class="chip chip-ghost" onclick="onPastReset()">Reset</button>' +
     "</div>" +
   "</div>";
@@ -2263,11 +2296,13 @@ function renderCheck(){
     "<p>The exam is stated to be based only on the training materials provided. These claims appear in the compiled notes but do not trace to the source deck. Treat them with caution.</p>" +
   "</div>" + cards +
   '<h3 class="block-h">Conflicts inside the past papers</h3>' +
-  '<div class="panel check-note"><p>Three recalled real-exam sittings sometimes disagree with each other or with the deck. Here is how to resolve each one.</p></div>' +
+  '<div class="panel check-note"><p>Four papers — three recalled real-exam sittings plus the official Confluence sample — sometimes disagree with each other or with the deck. Here is how to resolve each one.</p></div>' +
   conflictCards;
 }
 
 /* ===================== boot ===================== */
+QUESTIONS.forEach(function(q){ q.prob = probFor(q); });
+BLANKS.forEach(function(b){ b.prob = probFor(b); });
 CARDS.subjective = PAST_SUBJECTIVE.map(function(s){ return { f: s.q, b: s.a }; });
 
 document.querySelectorAll(".tab-btn").forEach(function(btn){
